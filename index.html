@@ -164,7 +164,11 @@ th .ar{color:var(--accent);margin-left:3px}
 .src{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);color:var(--dim);font-size:10px}
 .bar{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11.5px}
 .bar .lbl{width:108px;color:var(--dim);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
-.bar .track{flex:1;background:var(--panel2);border-radius:4px;height:16px;overflow:hidden;min-width:0}
+.bar .track{flex:1;background:var(--panel2);border-radius:4px;height:16px;overflow:hidden;
+  min-width:0;position:relative}
+.bar .cnt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:650;font-variant-numeric:tabular-nums;color:#f2f6ff;
+  text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.6);pointer-events:none;letter-spacing:.2px}
 .bar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px}
 .bar.acik .fill{background:linear-gradient(90deg,#6b5a3a,#9a7d4a)}
 .bar .uc{color:var(--warn);margin-left:2px;cursor:help}
@@ -1021,7 +1025,8 @@ function cizgi(el,items,pt){
   const H=items.map(hesap), mx=Math.max(...H.map(h=>h.g),1e-9);
   el.innerHTML=H.map(h=>`<div class="bar${h.acik?' acik':''}">
     <div class="lbl">${h.l}${h.acik&&oranMod?'<span class="uc" title="Bu bant açık uçlu (aday havuzunun sonuna kadar); oranı diğerleriyle birebir kıyaslamayın">*</span>':''}</div>
-    <div class="track"><div class="fill" style="width:${100*h.g/mx}%"></div></div>
+    <div class="track"><div class="fill" style="width:${100*h.g/mx}%"></div>${
+      oranMod?`<span class="cnt" title="bu banttaki kontenjan">${fmt(h.v)}</span>`:''}</div>
     <div class="val">${h.etiket}</div></div>`).join('');
 }
 function bolumPanel(){
