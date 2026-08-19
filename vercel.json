@@ -14,7 +14,7 @@
   ],
   "rewrites": [
     {
-      "source": "/((?!data/|_|.*\\.).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
