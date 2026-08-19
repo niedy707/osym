@@ -1,0 +1,27 @@
+{
+  "proje": "osym",
+  "son_tarama": "2026-08-19",
+  "oneriler": [
+    {"id":"Ö-1","baslik":"Geçmiş yılları ekle (2024-2025) ve trend göster","bolum":"özellik","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":30,"guven":"✅","not":"Matristeki tek büyük eksik; rakiplerin hepsinde 4+ yıl var"},
+    {"id":"Ö-2","baslik":"Sıralama tahminini YÖK Atlas 2026 ile kamuya açık kalibre et","bolum":"özellik","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":24,"guven":"✅","not":"YÖK Atlas 2026 verisinin yayımlanmasını bekliyor"},
+    {"id":"Ö-3","baslik":"Veri setini programatik tüketilebilir yayımla (CSV + Release)","bolum":"özellik","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":24,"guven":"✅"},
+    {"id":"Ö-4","baslik":"MCP sunucusu","bolum":"özellik","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":12,"guven":"🟡","not":"Ö-3'e bağımlı"},
+    {"id":"Ö-5","baslik":"rank_model.py altın-değer regresyon testi + CI","bolum":"mimari","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":27,"guven":"✅","not":"Quick Win; değişmezler CLAUDE.md'de zaten yazılı"},
+    {"id":"Ö-6","baslik":"LICENSE'ı saf MIT yap (GitHub NOASSERTION döndürüyor)","bolum":"mimari","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":27,"guven":"✅","not":"Quick Win; gh api ile doğrudan doğrulandı"},
+    {"id":"Ö-7","baslik":"Üretilmiş veriyi main'den çıkar, Actions ile üret","bolum":"mimari","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":18,"guven":"✅","not":"14,6 MB JSON; 2 sürüm = 27,6 MB blob (ölçüldü)"},
+    {"id":"Ö-8","baslik":"Açılıştaki 1,5 MB veri indirmesini böl (ozet.json + lazy)","bolum":"mimari","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":18,"guven":"✅","not":"Pages 100 GB/ay ~76.000 açılışa denk"},
+    {"id":"Ö-9","baslik":"README'ye İngilizce özet ve rozetler","bolum":"özellik","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":12,"guven":"🟡"},
+    {"id":"Ö-10","baslik":"Kaynak dosya bütünlüğü için SHA256SUMS","bolum":"güvenlik","durum":"açık","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":6,"guven":"⚪"},
+    {"id":"Ö-11","baslik":"YÖK Atlas scraping ile resmî sıra almak","bolum":"mimari","durum":"vazgeçildi","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":0,"guven":"✅","not":"Rakiplerin tamamı SPA geçişinde kırıldı; ÖSYM birincil kaynak üstünlüğü feda edilmez"},
+    {"id":"Ö-12","baslik":"Kullanıcı hesabı + tercih listesi kaydetme","bolum":"özellik","durum":"vazgeçildi","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":0,"guven":"✅","not":"Statik-site avantajını yok eder, KVKK yükü getirir"},
+    {"id":"Ö-13","baslik":"React/Vue'ya taşımak","bolum":"mimari","durum":"vazgeçildi","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":0,"guven":"✅","not":"Tek dosya sorunsuz; framework net kazanç sunmuyor"},
+    {"id":"Ö-14","baslik":"Veriyi veritabanına almak","bolum":"mimari","durum":"vazgeçildi","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":0,"guven":"✅","not":"21.493 satır tarayıcıda rahat; Ö-8 aynı sorunu sunucusuz çözüyor"},
+    {"id":"Ö-15","baslik":"GitHub Discussions / issue şablonu","bolum":"özellik","durum":"vazgeçildi","ilk_gorulme":"2026-08-19","durum_tarihi":"2026-08-19","skor":0,"guven":"🟡","not":"0★ yeni repoda erken; talep gelirse açılır"}
+  ],
+  "arastirma": {
+    "tarih": "2026-08-19",
+    "arama_sayisi": 7,
+    "kaynak_dogrulanan": 7,
+    "benzer_projeler": ["saidsurucu/yokatlas-mcp","saidsurucu/yokatlas-py","MorphaxTheDeveloper/yokatlas-dataset-2025","izcir/YokAPI","ibrahimenesduran/yokAtlas-crawler"]
+  }
+}
