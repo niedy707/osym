@@ -158,6 +158,20 @@ rows = build('kaynak/tablo4.xlsx', 'Lisans') + build('kaynak/tablo3.xlsx', 'Ön 
 print('Toplam program:', len(rows))
 os.makedirs('data', exist_ok=True)
 json.dump(rows, open('data/programlar.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))
+
+# Programatik tuketim icin CSV: Excel/pandas/R ile dogrudan acilabilir.
+CSV_ALAN = ['kod', 'uni', 'unituru', 'sehir', 'fak', 'prog', 'base', 'duzey', 'pt', 'burs', 'dil',
+            'kont', 'yer', 'acik', 'fazla', 'min', 'max', 'smin', 'smax', 'yuzde', 'guven',
+            'tk', 'ty', 'ob_k', 'ob_y', 'ob_min', 'ob_max', 'y34_k', 'y34_y', 'y34_min', 'y34_max',
+            'sehit_k', 'sehit_y', 'sehit_min', 'sehit_max',
+            'kktc', 'kktc_uni', 'uolp', 'uzaktan', 'io', 'aof']
+import csv as _csv
+with open('data/programlar.csv', 'w', newline='', encoding='utf-8-sig') as _f:
+    _w = _csv.DictWriter(_f, fieldnames=CSV_ALAN, extrasaction='ignore', delimiter=';')
+    _w.writeheader()
+    for _r in rows:
+        _w.writerow({k: ('' if _r.get(k) is None else _r.get(k)) for k in CSV_ALAN})
+print('CSV boyutu: %.1f MB' % (os.path.getsize('data/programlar.csv') / 1e6))
 print('JSON boyutu: %.1f MB' % (os.path.getsize('data/programlar.json')/1e6))
 
 # ozet

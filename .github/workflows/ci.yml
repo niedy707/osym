@@ -1,0 +1,43 @@
+name: veri ve model doğrulama
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # ÖSYM ek yerleştirme dönemi için haftalık kontrol (Pazartesi 06:00 UTC)
+    - cron: '0 6 * * 1'
+
+jobs:
+  dogrula:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Bağımlılık (yalnız veri üretimi için)
+        run: pip install openpyxl
+
+      - name: Kaynak dosya bütünlüğü (SHA-256)
+        working-directory: kaynak
+        run: sha256sum -c SHA256SUMS
+
+      - name: Model kendi kendini doğrulasın
+        run: python3 rank_model.py
+
+      - name: Veriyi sıfırdan üret
+        run: |
+          python3 build_data.py
+          python3 bolumler.py
+
+      - name: Depodaki veri, yeniden üretimle birebir aynı mı?
+        # Kaynak dosyalar aynıysa çıktı da aynı olmalı. Fark varsa ya veri elle
+        # düzenlenmiş ya da hat bozulmuş demektir.
+        run: git diff --exit-code --stat -- data/
+
+      - name: Değişmez testleri
+        run: python3 test_model.py

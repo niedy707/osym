@@ -158,6 +158,8 @@ th .ar{color:var(--accent);margin-left:3px}
 .hrow .badge{margin-left:0!important}
 .hrow .meta{font-weight:400;color:var(--dim);font-size:11px;white-space:nowrap}
 .hrow .meta b{color:var(--fg);font-weight:650}
+.who.tik{cursor:pointer;border-bottom:1px dashed rgba(255,143,143,.45)}
+.who.tik:hover,.who.tik:focus{color:#ffb3b3;border-bottom-style:solid;outline:none}
 .gcard .gsub{color:var(--dim);font-size:11px;margin-bottom:10px;line-height:1.5}
 .gcard .gsub b{color:var(--fg);font-weight:650}
 .tbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
@@ -317,14 +319,14 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
       <option value="enDusukPuan">en düşük puan</option>
     </select>
     <select id="okont" class="mini" aria-label="Minimum kontenjan">
-      <option value="0">kontenjan: hepsi</option><option value="200">min 200</option>
-      <option value="500" selected>min 500</option><option value="1000">min 1.000</option>
+      <option value="0">kontenjan: hepsi</option><option value="200" selected>min 200</option>
+      <option value="500">min 500</option><option value="1000">min 1.000</option>
     </select>
     <select id="opt" class="mini" aria-label="Puan türü"><option value="">tüm puan türleri</option>
       <option>SAY</option><option>EA</option><option>SÖZ</option><option>DİL</option></select>
     <select id="olimit" class="mini" aria-label="Kaç bölüm">
-      <option value="25">25 bölüm</option><option value="50" selected>50 bölüm</option>
-      <option value="100">100 bölüm</option><option value="9999">hepsi</option></select>
+      <option value="25">25 bölüm</option><option value="50">50 bölüm</option>
+      <option value="100">100 bölüm</option><option value="9999" selected>hepsi</option></select>
     <button class="iconbtn" id="osrcbtn" title="Bölüm ara" aria-label="Bölüm ara">
       <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.8 12.8L17 17" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
     </button>
@@ -506,11 +508,19 @@ const uniAd=u=>u.replace(/\s*\([^)]*\)$/,'');
 const turBadge=d=>`<span class="badge ${d.unituru==='DEVLET'?'dev':d.unituru==='VAKIF'?'vak':'kktc'}">${
   d.unituru==='DEVLET'?'Devlet':d.unituru==='VAKIF'?'Vakıf':d.unituru}</span>`;
 
-let ALL=[],BOLUMLER=[],DATA=[],VIEW=[],page=0;
+let ALL=null,BOLUMLER=[],DATA=[],VIEW=[],page=0,OZET=null,veriSozu=null;
 let sortKey='min',sortDir=-1,kktcMode='out',seciliBolum='Tıp';
 const isKKTC=d=>d.kktc_uni||d.kktc;
 const flags=new Set(); let preset=null;
-const applyKKTC=()=>{DATA = kktcMode==='in'?ALL:ALL.filter(d=>!isKKTC(d))};
+const applyKKTC=()=>{ if(ALL) DATA = kktcMode==='in'?ALL:ALL.filter(d=>!isKKTC(d)) };
+// Açılışta yalnızca ~315 KB'lik ozet.json iniyor; 14,6 MB'lik program verisi
+// ancak program listesi gereken bir sekme açıldığında tembel yükleniyor.
+function tamVeri(){
+  if(veriSozu) return veriSozu;
+  veriSozu = fetch('data/programlar.json').then(r=>r.json()).then(d=>{ALL=d;applyKKTC();return d});
+  return veriSozu;
+}
+const bolumOzet=()=>(OZET&&OZET.bolumler[kktcMode])||[];
 
 const COLS=[
   {k:'uni',t:'Üniversite',cls:'uni',r:d=>uniAd(d.uni)+turBadge(d)},
@@ -529,18 +539,17 @@ const PRESETS={tip:{ad:'Sadece Tıp',f:d=>d.base==='Tıp'&&d.duzey==='Lisans'},
   ogr:{ad:'Öğretmenlik',f:d=>/Öğretmenliği$/.test(d.base)}};
 const FLAGS={bos:'Açık kadrosu olanlar',dolu:'Tamamen dolanlar',nouzak:'Uzaktan/AÖF hariç'};
 
-Promise.all([fetch('data/programlar.json').then(r=>r.json()),
-             fetch('data/bolumler.json').then(r=>r.json())]).then(([p,b])=>{
-  ALL=p;BOLUMLER=b;applyKKTC();
+Promise.all([fetch('data/ozet.json').then(r=>r.json()),
+             fetch('data/bolumler.json').then(r=>r.json())]).then(([o,b])=>{
+  OZET=o;BOLUMLER=b;
   $('#loading').classList.add('hidden');
   $('#tab-grafik').classList.remove('hidden');
   init();
 });
 
 function init(){
-  const uniq=k=>[...new Set(ALL.map(d=>d[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));
-  [['#fpt','pt'],['#funi','unituru'],['#fsehir','sehir'],['#fburs','burs'],['#fdil','dil']]
-    .forEach(([s,k])=>uniq(k).forEach(v=>$(s).add(new Option(v,v))));
+  // filtre seçenekleri tam veri geldiğinde doldurulur
+  window._filtreDolduruldu=false;
   BOLUMLER.forEach(b=>$('#bsel').add(new Option(b.ad,b.base)));
   $('#bsel').value=seciliBolum;
   // sekme çubuğundaki "diğer bölümler" menüsü — kısayolu olan ikisi hariç
@@ -554,12 +563,30 @@ function init(){
   $('#sortsel').value='min|-1';
   $('#presets').innerHTML=Object.entries(PRESETS).map(([k,v])=>`<div class="chip" data-preset="${k}">${v.ad}</div>`).join('')
     +Object.entries(FLAGS).map(([k,v])=>`<div class="chip" data-flag="${k}">${v}</div>`).join('');
+  bind(); renderOzet(); renderGrafik(); aktifSekmeYenile();
+}
+function filtreleriDoldur(){
+  if(window._filtreDolduruldu||!ALL) return;
+  window._filtreDolduruldu=true;
+  const uniq=k=>[...new Set(ALL.map(d=>d[k]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'tr'));
+  [['#fpt','pt'],['#funi','unituru'],['#fsehir','sehir'],['#fburs','burs'],['#fdil','dil']]
+    .forEach(([sl,k])=>uniq(k).forEach(v=>$(sl).add(new Option(v,v))));
   ['unituru','burs'].forEach((k,i)=>{
     const sel=i===0?$('#bftur'):$('#bfburs');
     [...new Set(ALL.filter(d=>d.duzey==='Lisans').map(d=>d[k]))].filter(Boolean)
       .sort((a,b)=>a.localeCompare(b,'tr')).forEach(v=>sel.add(new Option(v,v)));
   });
-  bind(); apply(); bolumPanel(); renderOzet(); renderGrafik(); aktifSekmeYenile();
+}
+// Tam veri gerektiren sekmeler: gerekirse indir, sonra çiz.
+async function agirSekme(ad){
+  const hedef={all:'#list',bolum:'#blist',uni:'#ulist'}[ad];
+  if(!ALL){
+    if(hedef) $(hedef).innerHTML='<div class="card" style="color:var(--dim)">Program verisi yükleniyor…</div>';
+    await tamVeri(); filtreleriDoldur();
+  }
+  if(ad==='all') apply();
+  if(ad==='bolum') bolumPanel();
+  if(ad==='uni') renderUni();
 }
 function bind(){
   ['#q','#fduzey','#fpt','#funi','#fsehir','#fburs','#fdil','#pmin','#pmax','#smin','#smax','#kmin','#psize']
@@ -580,7 +607,9 @@ function bind(){
   $$('#kktcseg .segbtn').forEach(b=>b.onclick=()=>{
     kktcMode=b.dataset.kktc;applyKKTC();
     $$('#kktcseg .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.kktc===kktcMode));
-    page=0;apply();bolumPanel();renderOzet();aktifSekmeYenile()});
+    page=0;renderOzet();renderGrafik();
+    if(ALL){apply();bolumPanel()}
+    aktifSekmeYenile()});
   $$('.tab').forEach(t=>t.onclick=()=>{
     if(t.dataset.bolum){seciliBolum=t.dataset.bolum;$('#bsel').value=seciliBolum;$('#tabbsel').value='';bolumPanel()}
     sekmeAc(t.dataset.tab,t)});
@@ -588,7 +617,7 @@ function bind(){
     const v=$('#tabbsel').value; if(!v)return;
     seciliBolum=v;$('#bsel').value=v;bolumPanel();
     sekmeAc('bolum',null);$('#tabbsel').classList.add('on')};
-  $('#bsel').onchange=()=>{seciliBolum=$('#bsel').value;bolumPanel();sekmeIsaretle()};
+  $('#bsel').onchange=async()=>{seciliBolum=$('#bsel').value;await agirSekme('bolum');sekmeIsaretle()};
   ['#bq','#bftur','#bfburs'].forEach(s=>$(s).addEventListener('input',bolumListe));
   $('#bcsv').onclick=()=>indirProgram(bolumRows(),`2026-yks-${norm(seciliBolum).replace(/\s+/g,'-')}.csv`);
   ['#okont','#opt','#olimit','#oq','#osort'].forEach(s=>$(s).addEventListener('input',renderOzet));
@@ -623,12 +652,12 @@ function sekmeAc(ad,el){
   if(el)el.classList.add('on');
   ['grafik','ozet','bolum','all','uni','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
   sekmeIsaretle(); window.scrollTo({top:0}); aktifSekmeYenile();
+  if(['all','bolum','uni'].includes(ad)) agirSekme(ad);
 }
 function aktifSekmeYenile(){
   const cur=['grafik','ozet','bolum','all','uni','info']
     .find(n=>!$('#tab-'+n).classList.contains('hidden'))||'grafik';
   if(cur==='grafik')renderGrafik();
-  if(cur==='uni')renderUni();
   $('#kktcinfo').textContent=kktcMode==='out'
     ?'KKTC üniversiteleri ve "KKTC Uyruklu" kontenjanları hariç':'tüm programlar dahil';
 }
@@ -664,20 +693,7 @@ function kartlar(rows){
 }
 /* ---------- ÖZET ---------- */
 function ozetHesap(minKont){
-  const m=new Map();
-  DATA.filter(d=>d.duzey==='Lisans'&&d.smin!=null&&d.yuzde!=null).forEach(d=>{
-    let o=m.get(d.base);
-    if(!o){o={ad:d.base,prog:0,kont:0,yer:0,acik:0,wsum:0,pts:{},mins:[],sirs:[]};m.set(d.base,o)}
-    o.prog++;o.kont+=d.tk;o.yer+=d.ty;o.acik+=d.acik;o.wsum+=d.yuzde*d.tk;
-    o.pts[d.pt]=(o.pts[d.pt]||0)+d.tk;o.mins.push(d.min);o.sirs.push(d.smin);
-  });
-  const hepsi=[...m.values()].map(o=>{
-    o.dilim=o.kont?o.wsum/o.kont:null;
-    o.pt=Object.keys(o.pts).sort((a,b)=>o.pts[b]-o.pts[a])[0];
-    o.enIyiPuan=Math.max(...o.mins);o.enDusukPuan=Math.min(...o.mins);
-    o.enIyiSira=Math.min(...o.sirs);o.enDipSira=Math.max(...o.sirs);
-    o.dol=o.kont?100*o.yer/o.kont:null;return o;
-  }).sort((a,b)=>a.dilim-b.dilim);
+  const hepsi=bolumOzet();
   return {hepsi, gecen:hepsi.filter(o=>o.kont>=minKont), elenen:hepsi.filter(o=>o.kont<minKont)};
 }
 const OSORT={
@@ -783,7 +799,29 @@ function render(){
   $('#pinfo').textContent=`${VIEW.length?st+1:0}–${Math.min(st+ps,VIEW.length)} / ${fmt(VIEW.length)}`;
 }
 /* ---------- BÖLÜM PANELİ ---------- */
-const bolumBilgi=()=>BOLUMLER.find(b=>b.base===seciliBolum)||{ad:seciliBolum,base:seciliBolum,pt:'',baraj:null};
+function bolumBilgi(){
+  const b=BOLUMLER.find(x=>x.base===seciliBolum);
+  if(b) return b;
+  // Seçici listesinde olmayan bölüm: puan türünü ve payları veriden hesapla
+  const T=DATA.filter(d=>d.base===seciliBolum&&d.duzey==='Lisans');
+  const pts={}; T.forEach(d=>pts[d.pt]=(pts[d.pt]||0)+d.tk);
+  const pt=Object.keys(pts).sort((x,y)=>pts[y]-pts[x])[0]||'';
+  const L=DATA.filter(d=>d.duzey==='Lisans'&&d.smin!=null);
+  const pay=lim=>{
+    const tum=L.filter(d=>d.smin<=lim).reduce((s2,d)=>s2+d.tk,0);
+    const bu=T.filter(d=>d.smin!=null&&d.smin<=lim).reduce((s2,d)=>s2+d.tk,0);
+    return tum?+(100*bu/tum).toFixed(2):0;
+  };
+  return {ad:seciliBolum,base:seciliBolum,pt,baraj:BARAJ_TAHMIN(seciliBolum),
+          pay2000:pay(2000),pay50000:pay(50000)};
+}
+// ÖSYM barajları: kısayol listesinde olmayan bölümler için ad kalıbından çıkarım
+function BARAJ_TAHMIN(ad){
+  const tam={'Tıp':50000,'Diş Hekimliği':80000,'Eczacılık':100000,'Hukuk':100000,'Mimarlık':250000};
+  if(tam[ad]!=null) return tam[ad];
+  if(/Mühendisliği$/.test(ad)||/Öğretmenliği$/.test(ad)) return 300000;
+  return null;
+}
 const bolumAll=()=>DATA.filter(d=>d.base===seciliBolum&&d.duzey==='Lisans');
 function bolumRows(){
   const q=norm($('#bq').value),tu=$('#bftur').value,bu=$('#bfburs').value;
@@ -893,27 +931,30 @@ function bolumListe(){
     {k:'smax',t:'Tavan sıra ≈',n:1,r:d=>fmt(d.smax)+(d.max>550?'<span class="ext">⚠</span>':'')},
     {k:'tk',t:'Top. kont.',n:1},{k:'kod',t:'Kod'}],false);
 }
+/* Herhangi bir bölümü (seçici listesinde olmasa bile) panelde açar. */
+async function bolumAc(ad){
+  if(!ad) return;
+  const sel=$('#bsel');
+  if(![...sel.options].some(o=>o.value===ad)){
+    // 29'luk kısayol listesinde olmayan bölüm: seçiciye anlık ekle
+    const opt=new Option(ad,ad); opt.dataset.gecici='1'; sel.add(opt);
+  }
+  seciliBolum=ad; sel.value=ad;
+  sekmeAc('bolum', $$('.tab').find(t=>t.dataset.bolum===ad)||null);
+}
+
 /* ---------- GRAFİK GALERİSİ ---------- */
 function grafikSecim(){
-  const m=new Map();
-  DATA.filter(d=>d.duzey==='Lisans'&&d.smin!=null&&d.yuzde!=null).forEach(d=>{
-    let o=m.get(d.base);
-    if(!o){o={ad:d.base,prog:0,kont:0,yer:0,wsum:0,pts:{},rows:[]};m.set(d.base,o)}
-    o.prog++;o.kont+=d.tk;o.yer+=d.ty;o.wsum+=d.yuzde*d.tk;
-    o.pts[d.pt]=(o.pts[d.pt]||0)+d.tk;o.rows.push(d);
-  });
-  const hepsi=[...m.values()].map(o=>{
-    o.dilim=o.kont?o.wsum/o.kont:null;
-    o.pt=Object.keys(o.pts).sort((a,b)=>o.pts[b]-o.pts[a])[0];
-    o.dol=o.kont?100*o.yer/o.kont:null; return o;});
+  const hepsi=bolumOzet();
   const buyuk=hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,20);
   const ad=new Set(buyuk.map(o=>o.ad));
-  const elit=hepsi.filter(o=>!ad.has(o.ad)&&o.kont>=100).sort((a,b)=>a.dilim-b.dilim).slice(0,8);
+  const elit=hepsi.filter(o=>!ad.has(o.ad)&&o.kont>=100).slice().sort((a,b)=>a.dilim-b.dilim).slice(0,8);
   return {buyuk,elit};
 }
 function gKart(o){
   return `<div class="gcard">
-    <h3 class="hrow"><span class="who">${o.ad.toLocaleUpperCase('tr-TR')}</span><span class="badge pt">${o.pt}</span>
+    <h3 class="hrow"><span class="who tik" data-bolum="${o.ad.replace(/"/g,'&quot;')}"
+      role="button" tabindex="0" title="${o.ad} detayını aç">${o.ad.toLocaleUpperCase('tr-TR')}</span><span class="badge pt">${o.pt}</span>
       <span class="meta">${fmt(o.prog)} program · <b>${dolKisa(o.dol)}</b> / <b>${fmt(o.kont)}</b></span></h3>
     <div class="gbar"></div>
     <div class="src">2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app</div>
@@ -931,7 +972,12 @@ function renderGrafik(){
       en iyi yüzdelik dilime sahip bölümler.</div></div>
     <div class="grid2" id="g2">${elit.map(gKart).join('')}</div>`;
   const kartlar=[...buyuk,...elit], barlar=$$('#gwrap .gcard .gbar');
-  kartlar.forEach((o,i)=>{ if(barlar[i]) cizgi(barlar[i],bandVeri(o.rows,(BOLUMLER.find(b=>b.base===o.ad)||{}).baraj)); });
+  kartlar.forEach((o,i)=>{ if(barlar[i]) cizgi(barlar[i], o.bandlar||[]); });
+  $$('#gwrap .who.tik').forEach(el=>{
+    const ac=()=>bolumAc(el.dataset.bolum);
+    el.onclick=ac;
+    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();ac()} };
+  });
 }
 
 /* ---------- ÜNİVERSİTE / TÜM BÖLÜM ÖZETİ ---------- */
@@ -993,12 +1039,13 @@ function acSheet(o){
       probit interpolasyonla hesaplanır; ayrıntı için Yöntem sekmesi.</div>`;
   $('#ovl').classList.remove('hidden');
   const c=$('#sh-close'); if(c)c.onclick=kapatSheet;
-  const pn=$('#sh-panel'); if(pn)pn.onclick=()=>{kapatSheet();seciliBolum=o.ad;$('#bsel').value=o.ad;
-    bolumPanel();sekmeAc('bolum',$$('.tab').find(t=>t.dataset.bolum===o.ad)||null)};
-  const pr=$('#sh-prog'); if(pr)pr.onclick=()=>{kapatSheet();
+  const pn=$('#sh-panel'); if(pn)pn.onclick=()=>{kapatSheet();bolumAc(o.ad)};
+  const pr=$('#sh-prog'); if(pr)pr.onclick=async()=>{kapatSheet();
+    sekmeAc('all',$$('.tab').find(t=>t.dataset.tab==='all'));
+    await tamVeri(); filtreleriDoldur();
     $('#q').value=o.ad;$('#fduzey').value='';preset=null;
     $$('.chip[data-preset]').forEach(x=>x.classList.remove('on'));
-    page=0;apply();sekmeAc('all',$$('.tab').find(t=>t.dataset.tab==='all'))};
+    page=0;apply()};
 }
 function kapatSheet(){$('#ovl').classList.add('hidden')}
 /* ---------- CSV ---------- */
