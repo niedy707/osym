@@ -1146,8 +1146,8 @@ function grafikSecim(){
   const liste=hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,n);
   return {liste,
           baslik: n>=hepsi.length ? `Tüm bölümler (${fmt(hepsi.length)})` : `En çok kontenjanlı ${fmt(n)} bölüm`,
-          alt:'Kontenjan sayısına göre sıralı. Her grafik, o bölümün kontenjanının hangi sıralama '+
-              'bandından dolduğunu gösterir; sıralamalar tahmindir.'};
+          alt:'Kontenjan sayısına göre sıralı. Her grafik, o bölümün kontenjanının hangi başarı '+
+              'sırası bandından dolduğunu gösterir. Sıralar YÖK Atlas\'ın resmî başarı sırasıdır.'};
 }
 function gKart(o){
   return `<div class="gcard">
