@@ -8,35 +8,50 @@
 <title>2026-YKS Yerleştirme Verisi</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--fg:#e8eaed;--dim:#9aa3b2;
-  --accent:#5b9cff;--accent2:#28c88a;--warn:#ffb648;--chip:#232833;--pad:16px}
+  --accent:#5b9cff;--accent2:#28c88a;--warn:#ffb648;--chip:#232833;--pad:16px;
+  /* ÖSYM marka renkleri — osym.gov.tr'nin kendi stilinden alındı */
+  --os1:#c45a00;--os2:#ed7002;--os3:#f7a400;--osnavy:#14176c}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--fg);
   font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;overflow-x:hidden}
 a{color:var(--accent)}
 .hidden{display:none!important}
-header{background:linear-gradient(180deg,#1b1712,var(--panel) 62%);
-  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;
-  padding-top:max(0px,env(safe-area-inset-top))}
-.brandbar{height:3px;background:linear-gradient(90deg,var(--os1),var(--os2) 42%,var(--os3) 72%,var(--os1))}
-.hd{padding:11px var(--pad) 0}
+header{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);
+  padding-top:max(0px,env(safe-area-inset-top));
+  background:
+    radial-gradient(620px 130px at 8% -30%, rgba(237,112,2,.22), transparent 70%),
+    radial-gradient(520px 120px at 92% -40%, rgba(20,23,108,.35), transparent 70%),
+    linear-gradient(180deg,#171310,var(--panel) 70%)}
+.brandbar{height:3px;background:linear-gradient(90deg,var(--os1),var(--os2) 38%,var(--os3) 64%,var(--os2) 82%,var(--os1))}
+.hd{padding:12px var(--pad) 0;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:11px;min-width:0}
-.logo{flex:0 0 auto;width:42px;height:42px;border-radius:11px;
-  background:linear-gradient(145deg,var(--os2),var(--os1));
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  box-shadow:0 3px 12px rgba(196,90,0,.35);line-height:1}
-.logo span{font-size:13px;font-weight:800;color:#fff;letter-spacing:.6px}
-.logo i{font-style:normal;font-size:9.5px;font-weight:700;color:#ffe2c7;margin-top:2px;letter-spacing:1px}
+.logo{flex:0 0 auto;width:46px;height:46px;border-radius:13px;line-height:1;
+  background:linear-gradient(150deg,#ff8a1f,var(--os2) 45%,var(--os1));
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 6px 18px rgba(196,90,0,.38), inset 0 1px 0 rgba(255,255,255,.28)}
+.logo b{font-size:13px;font-weight:850;color:#fff;letter-spacing:.9px;
+  text-shadow:0 1px 1px rgba(120,50,0,.45)}
+.logo i{font-style:normal;font-size:9.5px;font-weight:750;color:#ffe4c9;letter-spacing:1.1px}
 .btxt{min-width:0}
-h1{margin:0;font-size:16px;font-weight:750;letter-spacing:-.2px;
-  background:linear-gradient(90deg,#fff,#ffd9b3);-webkit-background-clip:text;
-  background-clip:text;color:transparent}
-.sub{color:var(--dim);font-size:11px;margin-top:3px;line-height:1.45;display:flex;
-  align-items:center;gap:6px;flex-wrap:wrap}
-.sub .dot{width:6px;height:6px;border-radius:50%;background:var(--os3);flex:0 0 auto;
-  box-shadow:0 0 0 3px rgba(247,164,0,.15)}
-.sub .uy{border:1px solid #3a2a18;background:#241a10;color:#e0aa61;border-radius:20px;
-  padding:1px 8px;font-size:10px;white-space:nowrap}
+.h1{font-size:16.5px;font-weight:750;letter-spacing:-.25px;color:#fff;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{color:var(--dim);font-size:11px;margin-top:3px;line-height:1.4;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pill{border:1px solid var(--line);background:rgba(35,40,51,.7);color:var(--dim);
+  border-radius:20px;padding:4px 10px;font-size:11px;white-space:nowrap}
+.pill b{color:var(--fg);font-weight:700;font-variant-numeric:tabular-nums}
+.pill.uy{border-color:#4a3418;background:rgba(36,26,16,.8);color:#e0aa61}
+@media (max-width:620px){
+  .hd{padding-top:11px}
+  .h1{font-size:15px}
+  .hmeta{gap:5px}
+  .pill{padding:3px 8px;font-size:10px}
+  .pill:not(.uy){display:none}          /* dar ekranda yalnız uyarı rozeti kalsın */
+}
 .tabs{display:flex;gap:5px;margin-top:10px;padding:0 var(--pad) 9px;overflow-x:auto;overflow-y:hidden;
   flex-wrap:nowrap;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tabs::-webkit-scrollbar{display:none}
@@ -48,6 +63,7 @@ h1{margin:0;font-size:16px;font-weight:750;letter-spacing:-.2px;
   background-color:var(--chip);border:1px solid var(--line);color:var(--fg);font-size:12.5px;
   background-position:right 8px center}
 .tabsel.on{background-color:var(--os1);color:#fff;font-weight:650;border-color:var(--os1)}
+.toolbar #gmod{margin-left:auto}
 .toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px var(--pad);
   border-bottom:1px solid var(--line);background:var(--panel2)}
 .tlbl{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
@@ -265,7 +281,6 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 .foot{color:var(--dim);font-size:11.5px;line-height:1.7;margin-top:10px}
 @media (min-width:768px){
   :root{--pad:22px}
-  h1{font-size:16.5px}
   input,select,button{font-size:12.5px}
   input,select{padding:7px 9px}
   select{padding-right:26px}
@@ -304,12 +319,16 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <div class="brandbar"></div>
   <div class="hd">
     <div class="brand">
-      <div class="logo" aria-hidden="true"><span>YKS</span><i>26</i></div>
+      <div class="logo" aria-hidden="true"><b>YKS</b><i>2026</i></div>
       <div class="btxt">
-        <h1>2026-YKS Yerleştirme Verisi</h1>
-        <div class="sub"><span class="dot"></span>ÖSYM resmî TABLO-3 &amp; TABLO-4 · 18.08.2026 ·
-          21.493 program <span class="uy">resmî ÖSYM sitesi değildir</span></div>
+        <div class="h1">2026-YKS Yerleştirme Verisi</div>
+        <div class="sub">ÖSYM resmî TABLO-3 &amp; TABLO-4 · 18.08.2026</div>
       </div>
+    </div>
+    <div class="hmeta">
+      <span class="pill"><b>21.493</b> program</span>
+      <span class="pill"><b>730.854</b> yerleşen</span>
+      <span class="pill uy">resmî ÖSYM sitesi değildir</span>
     </div>
   </div>
   <div class="tabs">
@@ -327,6 +346,13 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <span class="tlbl">KKTC</span>
   <div class="seg" id="kktcseg"><div class="segbtn" data-kktc="in">dahil</div><div class="segbtn on" data-kktc="out">hariç</div></div>
   <span class="kotalbl" id="kktcinfo"></span>
+  <select id="gmod" class="mini hidden" aria-label="Gösterilecek bölümler">
+    <option value="20" selected>en çok kontenjanlı 20</option>
+    <option value="50">en çok kontenjanlı 50</option>
+    <option value="100">en çok kontenjanlı 100</option>
+    <option value="9999">hepsi</option>
+    <option value="elit">kontenjanı az ama rekabetçi ilk 20</option>
+  </select>
 </div>
 <main>
 <div id="loading" class="loading">Veri yükleniyor…</div>
@@ -371,16 +397,6 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 
 <!-- ============ GRAFİKLER ============ -->
 <section id="tab-grafik" class="hidden">
-  <div class="tbar">
-    <div class="tbinfo" id="ginfo"></div>
-    <select id="gmod" class="mini" aria-label="Gösterilecek bölümler">
-      <option value="20" selected>en çok kontenjanlı 20</option>
-      <option value="50">en çok kontenjanlı 50</option>
-      <option value="100">en çok kontenjanlı 100</option>
-      <option value="9999">hepsi</option>
-      <option value="elit">kontenjanı az ama rekabetçi ilk 20</option>
-    </select>
-  </div>
   <div id="gwrap"></div>
 </section>
 
@@ -701,6 +717,7 @@ function aktifSekmeYenile(){
   const cur=['grafik','ozet','bolum','all','uni','info']
     .find(n=>!$('#tab-'+n).classList.contains('hidden'))||'grafik';
   if(cur==='grafik')renderGrafik();
+  $('#gmod').classList.toggle('hidden',cur!=='grafik');
   $('#kktcinfo').textContent=kktcMode==='out'
     ?'KKTC üniversiteleri ve "KKTC Uyruklu" kontenjanları hariç':'tüm programlar dahil';
 }
@@ -1017,7 +1034,6 @@ function gKart(o){
 }
 function renderGrafik(){
   const {liste,baslik,alt}=grafikSecim();
-  $('#ginfo').textContent=`${fmt(liste.length)} bölüm`;
   $('#gwrap').innerHTML=`
     <div class="ghead"><h2>${baslik}</h2><div class="gs">${alt}</div></div>
     <div class="grid2" id="g1">${liste.map(gKart).join('')}</div>`;
