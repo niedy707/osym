@@ -141,6 +141,14 @@ th .ar{color:var(--accent);margin-left:3px}
   72%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.97)}}
 @media (prefers-reduced-motion:reduce){#splash{animation:spFade 1.55s linear forwards}
   #splash .sp{animation:spFade 1.55s linear forwards}}
+.ghead{margin:4px 0 11px}
+.ghead h2{margin:0;font-size:14px;font-weight:700}
+.ghead .gs{color:var(--dim);font-size:11.5px;margin-top:3px;line-height:1.5}
+.gcard{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px}
+.gcard h3{margin:0 0 3px;font-size:12.5px;font-weight:650;line-height:1.4}
+.gcard h3 .who{color:#ff8f8f;font-weight:750;letter-spacing:.3px}
+.gcard .gsub{color:var(--dim);font-size:11px;margin-bottom:10px;line-height:1.5}
+.gcard .gsub b{color:var(--fg);font-weight:650}
 .tbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
 .tbinfo{order:2;flex:1 0 100%;min-width:0;color:var(--dim);font-size:11.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -248,6 +256,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <div class="tabs">
     <div class="tab on" data-tab="tumbolum">Tüm Bölümler</div>
     <div class="tab" data-tab="ozet">Bölüm Özeti</div>
+    <div class="tab" data-tab="grafik">Grafikler</div>
     <div class="tab" data-tab="bolum" data-bolum="Tıp">Tıp</div>
     <div class="tab" data-tab="bolum" data-bolum="Bilgisayar Mühendisliği">Bilgisayar Müh.</div>
     <select class="tabsel" id="tabbsel" aria-label="Diğer bölümler"></select>
@@ -292,6 +301,11 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   </div></div>
   <div id="olist"></div>
   <div class="foot" id="ofoot"></div>
+</section>
+
+<!-- ============ GRAFİKLER ============ -->
+<section id="tab-grafik" class="hidden">
+  <div id="gwrap"></div>
 </section>
 
 <!-- ============ BÖLÜM PANELİ ============ -->
@@ -593,12 +607,13 @@ function sekmeAc(ad,el){
   $$('.tab').forEach(x=>x.classList.remove('on'));
   $('#tabbsel').classList.remove('on');
   if(el)el.classList.add('on');
-  ['ozet','bolum','all','uni','tumbolum','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
+  ['tumbolum','ozet','grafik','bolum','all','uni','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
   sekmeIsaretle(); window.scrollTo({top:0}); aktifSekmeYenile();
 }
 function aktifSekmeYenile(){
-  const cur=['ozet','bolum','all','uni','tumbolum','info']
+  const cur=['tumbolum','ozet','grafik','bolum','all','uni','info']
     .find(n=>!$('#tab-'+n).classList.contains('hidden'))||'tumbolum';
+  if(cur==='grafik')renderGrafik();
   if(cur==='uni')renderUni();
   if(cur==='tumbolum')renderTumBolum();
   $('#kktcinfo').textContent=kktcMode==='out'
@@ -773,6 +788,17 @@ function bolumRows(){
   return bolumAll().filter(d=>(!tu||d.unituru===tu)&&(!bu||d.burs===bu)&&
     (!q||norm(d.uni+' '+d.sehir+' '+d.prog).includes(q))).sort((a,b)=>(b.min??0)-(a.min??0));
 }
+// bir bölümün programlarını tahmini sıralama bantlarına dağıtır
+function bandVeri(T,baraj){
+  const sirs=T.filter(d=>d.smin!=null).map(d=>d.smin);
+  if(!sirs.length) return [];
+  const ustSinir=baraj||Math.max(...sirs);
+  return [[1,1000],[1000,5000],[5000,10000],[10000,25000],[25000,50000],[50000,100000],
+          [100000,200000],[200000,300000],[300000,1e7]]
+    .filter(([a])=>a<ustSinir*1.05)
+    .map(([a,b])=>[`${fmt(a)} – ${b>=1e7?'∞':fmt(b)}`,
+                   T.filter(d=>d.smin>=a&&d.smin<b).reduce((s,x)=>s+x.tk,0)]);
+}
 function cizgi(el,items){
   const mx=Math.max(...items.map(i=>i[1]),1);
   el.innerHTML=items.map(([l,v])=>`<div class="bar"><div class="lbl">${l}</div>
@@ -782,7 +808,8 @@ function cizgi(el,items){
 function bolumPanel(){
   const B=bolumBilgi(),T=bolumAll(),AD=B.ad.toLocaleUpperCase('tr-TR');
   const kaynak=`2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app`;
-  const alt=`${B.ad} · ${T.length} program · puan türü ${B.pt}`;
+  const _tk=T.reduce((a,d)=>a+d.tk,0), _ty=T.reduce((a,d)=>a+d.ty,0);
+  const alt=`${B.ad} · ${T.length} program · puan türü ${B.pt} · toplam kontenjan ${fmt(_tk)} · doluluk ${dolKisa(_tk?100*_ty/_tk:null)}`;
   ['#kt1','#kt2','#kt3','#kt4','#kt5','#kt6'].forEach(id=>$(id).textContent=AD);
   ['#cs2','#cs3','#cs4','#cs5','#cs6'].forEach(id=>$(id).textContent=alt);
   ['#sr2','#sr3','#sr4','#sr5'].forEach(id=>$(id).textContent=kaynak);
@@ -830,10 +857,7 @@ function bolumPanel(){
   const adim=Math.max(5,Math.ceil((pmx-pmn)/7/5)*5);
   const bandlar=[];for(let a=Math.floor(pmn/adim)*adim;a<=pmx;a+=adim)bandlar.push([a,a+adim]);
   cizgi($('#hist'),bandlar.reverse().map(([a,b])=>[`${a} – ${b}`,T.filter(d=>d.min>=a&&d.min<b).reduce((s,x)=>s+x.tk,0)]));
-  const ustSinir=B.baraj||Math.max(...ile.map(d=>d.smin));
-  const sb=[[1,1000],[1000,5000],[5000,10000],[10000,25000],[25000,50000],[50000,100000],
-            [100000,200000],[200000,300000],[300000,1e7]].filter(([a])=>a<ustSinir*1.05);
-  cizgi($('#band'),sb.map(([a,b])=>[`${fmt(a)} – ${b>=1e7?'∞':fmt(b)}`,T.filter(d=>d.smin>=a&&d.smin<b).reduce((s,x)=>s+x.tk,0)]));
+  cizgi($('#band'),bandVeri(T,B.baraj));
   const by=k=>{const m={};T.forEach(d=>m[d[k]]=(m[d[k]]||0)+d.tk);return Object.entries(m).sort((a,b)=>b[1]-a[1])};
   cizgi($('#tur'),by('unituru'));cizgi($('#burs'),by('burs'));
   const A=T.filter(d=>d.acik>0).map(d=>{
@@ -866,6 +890,48 @@ function bolumListe(){
     {k:'smax',t:'Tavan sıra ≈',n:1,r:d=>fmt(d.smax)+(d.max>550?'<span class="ext">⚠</span>':'')},
     {k:'tk',t:'Top. kont.',n:1},{k:'kod',t:'Kod'}],false);
 }
+/* ---------- GRAFİK GALERİSİ ---------- */
+function grafikSecim(){
+  const m=new Map();
+  DATA.filter(d=>d.duzey==='Lisans'&&d.smin!=null&&d.yuzde!=null).forEach(d=>{
+    let o=m.get(d.base);
+    if(!o){o={ad:d.base,prog:0,kont:0,yer:0,wsum:0,pts:{},rows:[]};m.set(d.base,o)}
+    o.prog++;o.kont+=d.tk;o.yer+=d.ty;o.wsum+=d.yuzde*d.tk;
+    o.pts[d.pt]=(o.pts[d.pt]||0)+d.tk;o.rows.push(d);
+  });
+  const hepsi=[...m.values()].map(o=>{
+    o.dilim=o.kont?o.wsum/o.kont:null;
+    o.pt=Object.keys(o.pts).sort((a,b)=>o.pts[b]-o.pts[a])[0];
+    o.dol=o.kont?100*o.yer/o.kont:null; return o;});
+  const buyuk=hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,20);
+  const ad=new Set(buyuk.map(o=>o.ad));
+  const elit=hepsi.filter(o=>!ad.has(o.ad)&&o.kont>=100).sort((a,b)=>a.dilim-b.dilim).slice(0,8);
+  return {buyuk,elit};
+}
+function gKart(o){
+  return `<div class="gcard">
+    <h3><span class="who">${o.ad.toLocaleUpperCase('tr-TR')}</span> — tahmini sıralama bandına göre kontenjan</h3>
+    <div class="gsub">${fmt(o.prog)} program · puan türü ${o.pt} ·
+      toplam kontenjan <b>${fmt(o.kont)}</b> · doluluk <b>${dolKisa(o.dol)}</b></div>
+    <div class="gbar"></div>
+    <div class="src">2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app</div>
+  </div>`;
+}
+function renderGrafik(){
+  const {buyuk,elit}=grafikSecim();
+  $('#gwrap').innerHTML=`
+    <div class="ghead"><h2>En çok kontenjanlı 20 bölüm</h2>
+      <div class="gs">Her grafik, o bölümün kontenjanının hangi sıralama bandından dolduğunu gösterir.
+      Sıralamalar tahmindir — ÖSYM'nin "Yerleştirme Puanlarının Yığınsal Dağılımı" tablosundan hesaplanır.</div></div>
+    <div class="grid2" id="g1">${buyuk.map(gKart).join('')}</div>
+    <div class="ghead" style="margin-top:18px"><h2>Kontenjanı küçük ama en rekabetçi 8 bölüm</h2>
+      <div class="gs">İlk 20'ye giremeyecek kadar küçük (en az 100 kontenjan) ama kendi puan türü içinde
+      en iyi yüzdelik dilime sahip bölümler.</div></div>
+    <div class="grid2" id="g2">${elit.map(gKart).join('')}</div>`;
+  const kartlar=[...buyuk,...elit], barlar=$$('#gwrap .gcard .gbar');
+  kartlar.forEach((o,i)=>{ if(barlar[i]) cizgi(barlar[i],bandVeri(o.rows,(BOLUMLER.find(b=>b.base===o.ad)||{}).baraj)); });
+}
+
 /* ---------- ÜNİVERSİTE / TÜM BÖLÜM ÖZETİ ---------- */
 function topla(keyFn,filterFn){
   const m=new Map();
