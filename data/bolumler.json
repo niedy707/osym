@@ -6,8 +6,8 @@
   "pt": "SAY",
   "baraj": 50000,
   "kont": 19032,
-  "pay2000": 28.6,
-  "pay50000": 23.93
+  "pay2000": 21.79,
+  "pay50000": 24.01
  },
  {
   "base": "Hukuk",
@@ -16,8 +16,8 @@
   "pt": "EA",
   "baraj": 100000,
   "kont": 8937,
-  "pay2000": 5.2,
-  "pay50000": 7.4
+  "pay2000": 5.87,
+  "pay50000": 7.42
  },
  {
   "base": "Diş Hekimliği",
@@ -27,7 +27,7 @@
   "baraj": 80000,
   "kont": 6711,
   "pay2000": 0.0,
-  "pay50000": 5.48
+  "pay50000": 5.5
  },
  {
   "base": "İngiliz Dili ve Edebiyatı",
@@ -36,8 +36,8 @@
   "pt": "DİL",
   "baraj": null,
   "kont": 4539,
-  "pay2000": 0.26,
-  "pay50000": 4.36
+  "pay2000": 0.29,
+  "pay50000": 4.37
  },
  {
   "base": "Okul Öncesi Öğretmenliği",
@@ -46,8 +46,8 @@
   "pt": "SÖZ",
   "baraj": 300000,
   "kont": 3436,
-  "pay2000": 0.99,
-  "pay50000": 3.47
+  "pay2000": 1.12,
+  "pay50000": 3.48
  },
  {
   "base": "İngilizce Öğretmenliği",
@@ -57,7 +57,7 @@
   "baraj": 300000,
   "kont": 3348,
   "pay2000": 0.0,
-  "pay50000": 3.13
+  "pay50000": 3.14
  },
  {
   "base": "Özel Eğitim Öğretmenliği",
@@ -66,8 +66,8 @@
   "pt": "SÖZ",
   "baraj": 300000,
   "kont": 2795,
-  "pay2000": 4.53,
-  "pay50000": 3.01
+  "pay2000": 5.12,
+  "pay50000": 3.02
  },
  {
   "base": "İngilizce Mütercim ve Tercümanlık",
@@ -87,7 +87,7 @@
   "baraj": 300000,
   "kont": 2852,
   "pay2000": 0.0,
-  "pay50000": 2.45
+  "pay50000": 2.46
  },
  {
   "base": "Eczacılık",
@@ -97,7 +97,7 @@
   "baraj": 100000,
   "kont": 3221,
   "pay2000": 0.0,
-  "pay50000": 2.42
+  "pay50000": 2.43
  },
  {
   "base": "Bilgisayar Mühendisliği",
@@ -106,7 +106,7 @@
   "pt": "SAY",
   "baraj": 300000,
   "kont": 13404,
-  "pay2000": 0.64,
+  "pay2000": 0.72,
   "pay50000": 2.11
  },
  {
@@ -116,18 +116,8 @@
   "pt": "SAY",
   "baraj": 300000,
   "kont": 8065,
-  "pay2000": 6.89,
+  "pay2000": 7.78,
   "pay50000": 2.06
- },
- {
-  "base": "Makine Mühendisliği",
-  "slug": "makine-muhendisligi",
-  "ad": "Makine Mühendisliği",
-  "pt": "SAY",
-  "baraj": 300000,
-  "kont": 6702,
-  "pay2000": 0.35,
-  "pay50000": 1.81
  },
  {
   "base": "Gastronomi ve Mutfak Sanatları",
@@ -136,8 +126,18 @@
   "pt": "SÖZ",
   "baraj": null,
   "kont": 6243,
-  "pay2000": 0.96,
-  "pay50000": 1.77
+  "pay2000": 1.08,
+  "pay50000": 1.78
+ },
+ {
+  "base": "Makine Mühendisliği",
+  "slug": "makine-muhendisligi",
+  "ad": "Makine Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 6702,
+  "pay2000": 0.4,
+  "pay50000": 1.74
  },
  {
   "base": "Turizm Rehberliği",
@@ -147,7 +147,7 @@
   "baraj": null,
   "kont": 2124,
   "pay2000": 0.0,
-  "pay50000": 1.68
+  "pay50000": 1.69
  },
  {
   "base": "Endüstri Mühendisliği",
@@ -156,18 +156,8 @@
   "pt": "SAY",
   "baraj": 300000,
   "kont": 7239,
-  "pay2000": 2.14,
-  "pay50000": 1.58
- },
- {
-  "base": "İşletme",
-  "slug": "isletme",
-  "ad": "İşletme",
-  "pt": "EA",
-  "baraj": null,
-  "kont": 12994,
-  "pay2000": 7.82,
-  "pay50000": 1.52
+  "pay2000": 0.54,
+  "pay50000": 1.56
  },
  {
   "base": "Psikoloji",
@@ -176,8 +166,18 @@
   "pt": "EA",
   "baraj": null,
   "kont": 10705,
-  "pay2000": 1.98,
+  "pay2000": 2.23,
   "pay50000": 1.5
+ },
+ {
+  "base": "İşletme",
+  "slug": "isletme",
+  "ad": "İşletme",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 12994,
+  "pay2000": 8.32,
+  "pay50000": 1.49
  },
  {
   "base": "İktisat",
@@ -186,18 +186,8 @@
   "pt": "EA",
   "baraj": null,
   "kont": 8671,
-  "pay2000": 7.34,
-  "pay50000": 1.19
- },
- {
-  "base": "Yönetim Bilişim Sistemleri",
-  "slug": "yonetim-bilisim-sistemleri",
-  "ad": "Yönetim Bilişim Sistemleri",
-  "pt": "EA",
-  "baraj": null,
-  "kont": 7318,
-  "pay2000": 2.11,
-  "pay50000": 1.17
+  "pay2000": 8.29,
+  "pay50000": 1.2
  },
  {
   "base": "İlahiyat",
@@ -206,8 +196,18 @@
   "pt": "SÖZ",
   "baraj": null,
   "kont": 10561,
-  "pay2000": 0.29,
+  "pay2000": 0.32,
   "pay50000": 1.17
+ },
+ {
+  "base": "Yönetim Bilişim Sistemleri",
+  "slug": "yonetim-bilisim-sistemleri",
+  "ad": "Yönetim Bilişim Sistemleri",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 7318,
+  "pay2000": 2.38,
+  "pay50000": 1.16
  },
  {
   "base": "Tarih",
@@ -216,7 +216,7 @@
   "pt": "SÖZ",
   "baraj": null,
   "kont": 3895,
-  "pay2000": 3.51,
+  "pay2000": 3.96,
   "pay50000": 0.79
  },
  {
@@ -226,7 +226,7 @@
   "pt": "EA",
   "baraj": null,
   "kont": 3532,
-  "pay2000": 2.87,
+  "pay2000": 3.24,
   "pay50000": 0.59
  },
  {
@@ -236,8 +236,8 @@
   "pt": "SÖZ",
   "baraj": null,
   "kont": 3614,
-  "pay2000": 1.4,
-  "pay50000": 0.48
+  "pay2000": 1.59,
+  "pay50000": 0.49
  },
  {
   "base": "Elektronik ve Haberleşme Mühendisliği",
@@ -246,7 +246,7 @@
   "pt": "SAY",
   "baraj": 300000,
   "kont": 483,
-  "pay2000": 1.66,
+  "pay2000": 1.87,
   "pay50000": 0.41
  },
  {
@@ -256,8 +256,18 @@
   "pt": "SAY",
   "baraj": 300000,
   "kont": 500,
-  "pay2000": 1.66,
+  "pay2000": 1.87,
   "pay50000": 0.41
+ },
+ {
+  "base": "Yeni Medya ve İletişim",
+  "slug": "yeni-medya-ve-iletisim",
+  "ad": "Yeni Medya ve İletişim",
+  "pt": "SÖZ",
+  "baraj": null,
+  "kont": 2091,
+  "pay2000": 1.01,
+  "pay50000": 0.38
  },
  {
   "base": "Uluslararası İlişkiler",
@@ -266,7 +276,7 @@
   "pt": "EA",
   "baraj": null,
   "kont": 4457,
-  "pay2000": 1.88,
+  "pay2000": 2.13,
   "pay50000": 0.37
  },
  {
@@ -276,7 +286,7 @@
   "pt": "EA",
   "baraj": null,
   "kont": 1299,
-  "pay2000": 2.17,
+  "pay2000": 2.45,
   "pay50000": 0.17
  },
  {
@@ -286,7 +296,37 @@
   "pt": "DİL",
   "baraj": null,
   "kont": 112,
-  "pay2000": 1.31,
+  "pay2000": 1.48,
   "pay50000": 0.07
+ },
+ {
+  "base": "Uluslararası Ticaret",
+  "slug": "uluslararasi-ticaret",
+  "ad": "Uluslararası Ticaret",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 360,
+  "pay2000": 1.12,
+  "pay50000": 0.04
+ },
+ {
+  "base": "Sanat ve Sosyal Bilimler Programları",
+  "slug": "sanat-ve-sosyal-bilimler-programlari",
+  "ad": "Sanat ve Sosyal Bilimler Programları",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 150,
+  "pay2000": 1.08,
+  "pay50000": 0.04
+ },
+ {
+  "base": "Yönetim Bilimleri Programları",
+  "slug": "yonetim-bilimleri-programlari",
+  "ad": "Yönetim Bilimleri Programları",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 175,
+  "pay2000": 1.08,
+  "pay50000": 0.04
  }
 ]

@@ -28,12 +28,12 @@ def baraj(base):
     return None
 
 def uret(rows, esik=0.01):
-    L = [r for r in rows if r['duzey'] == 'Lisans' and r['smin']]
+    L = [r for r in rows if r['duzey'] == 'Lisans' and r['sira']]
 
     def pay(limit):
         c = collections.Counter()
         for r in L:
-            if r['smin'] <= limit:
+            if r['sira'] <= limit:
                 c[r['base']] += r['tk']
         return c, sum(c.values())
 

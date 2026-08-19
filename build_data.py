@@ -104,6 +104,17 @@ def oku(path):
             continue
         yield {k: ('' if c is None else str(c).strip()) for k, c in zip(COLS, r[:22])}
 
+# YOK Atlas'in yayimladigi RESMI basari siralari (varsa). Dosya yoksa proje
+# tamamen tahmini siralarla calisir; veri hatti YOK Atlas'a bagimli degildir.
+RESMI = {}
+_rs = 'kaynak/yokatlas_basari_sirasi.json'
+if os.path.exists(_rs):
+    RESMI = json.load(open(_rs, encoding='utf-8'))
+    print(f'resmî başarı sırası: {len(RESMI)} program')
+else:
+    print('UYARI: kaynak/yokatlas_basari_sirasi.json yok — tüm sıralar tahmini')
+
+
 def build(path, duzey):
     out = []
     for x in oku(path):
@@ -120,16 +131,25 @@ def build(path, duzey):
             'pt': pt, 'duzey': duzey, 'sehir': sehir(uni), 'burs': burs, 'dil': dil,
             'kont': i(x['genel_kontenjan']), 'yer': i(x['genel_yerlesen']),
             'min': mn, 'max': mx, 'smin': r_mn, 'smax': r_mx,
-            # yuzde: adayin KENDI puan turu icindeki yuzdelik dilimi.
+            # rsira : YOK Atlas'in RESMI basari sirasi (yoksa None)
+            # sira  : ekranda gosterilen sira — resmi varsa o, yoksa tahmin
+            # smin  : her zaman modelin tahmini (kalibrasyon icin saklanir)
+            'rsira': None, 'sira': None, 'sirakaynak': None,
+            # yuzde: gosterilen siranin KENDI puan turu icindeki yuzdelik dilimi.
             # Farkli puan turleri ancak bu deger uzerinden karsilastirilabilir
             # (SAY'da 1.135.718 aday varken DIL'de 132.826 aday var).
-            'yuzde': (round(100 * r_mn / NTOT[pt], 4)
-                      if (r_mn is not None and pt in NTOT) else None),
+            'yuzde': None,
             'guven': c_mn or c_mx or '',
             'kktc': 'kktc uyruklu' in low, 'uolp': 'uolp' in low,
             'uzaktan': 'uzaktan' in low, 'io': 'ikinci öğretim' in low,
             'aof': 'açıköğretim' in low,
         }
+        rs = RESMI.get(x['program_kodu'])
+        rec['rsira'] = int(rs) if rs else None
+        rec['sira'] = rec['rsira'] if rec['rsira'] is not None else r_mn
+        rec['sirakaynak'] = 'resmi' if rec['rsira'] is not None else ('tahmini' if r_mn else None)
+        rec['yuzde'] = (round(100 * rec['sira'] / NTOT[pt], 4)
+                        if (rec['sira'] is not None and pt in NTOT) else None)
         rec['bos'] = rec['kont'] - rec['yer']
         rec['kktc_uni'] = rec['unituru'] in ('KKTC', 'YURTDISI VAKIF')
         for k, lbl in QUOTAS[1:]:

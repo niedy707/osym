@@ -17,12 +17,12 @@
    "id": "Ö-2",
    "baslik": "Sıralama tahminini YÖK Atlas 2026 ile kamuya açık kalibre et",
    "bolum": "özellik",
-   "durum": "açık",
+   "durum": "yapıldı",
    "ilk_gorulme": "2026-08-19",
    "durum_tarihi": "2026-08-19",
    "skor": 24,
    "guven": "✅",
-   "not": "ARAÇ HAZIR, VERİ BEKLENİYOR: kalibrasyon.py yazıldı ve çalışır durumda; YÖK Atlas 2026 verisi 19.08.2026 itibarıyla erişime açılmamıştı."
+   "not": "YÖK Atlas 2026 aynı gün yayımlandı. 18.251 programın resmî başarı sırası çekildi (resmi_sira.py), KALIBRASYON.md üretildi: medyan sapma %0,25. Ayrıca site artık resmî sırayı gösteriyor, tahmin yalnız yedek."
   },
   {
    "id": "Ö-3",

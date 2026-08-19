@@ -22,7 +22,7 @@ def tr(n):
 
 
 def bandla(rows, baraj):
-    sirs = [r['smin'] for r in rows if r['smin'] is not None]
+    sirs = [r['sira'] for r in rows if r['sira'] is not None]
     if not sirs:
         return []
     ust = baraj or max(sirs)
@@ -30,15 +30,19 @@ def bandla(rows, baraj):
     for a, b in BANDLAR:
         if a >= ust * 1.05:
             break
-        etiket = f"{tr(a)} – {'∞' if b >= 10**7 else tr(b)}"
-        out.append([etiket, sum(r['tk'] for r in rows if r['smin'] is not None and a <= r['smin'] < b)])
+        acik = b >= 10**7                       # 300.000 – ∞ : ust sinir yok
+        etiket = f"{tr(a)} – {'∞' if acik else tr(b)}"
+        deger = sum(r['tk'] for r in rows if r['sira'] is not None and a <= r['sira'] < b)
+        # [etiket, kontenjan, alt sinir, ust sinir]  — ust sinir None ise acik bant.
+        # Oran modu bant genisligine bolecegi icin sinirlar istemciye lazim.
+        out.append([etiket, deger, a, None if acik else b])
     return out
 
 
 def varyant(rows):
     g = {}
     for r in rows:
-        if r['duzey'] != 'Lisans' or r['smin'] is None or r.get('yuzde') is None:
+        if r['duzey'] != 'Lisans' or r['sira'] is None or r.get('yuzde') is None:
             continue
         g.setdefault(r['base'], []).append(r)
 
@@ -51,7 +55,7 @@ def varyant(rows):
             pts[x['pt']] = pts.get(x['pt'], 0) + x['tk']
         pt = max(pts, key=pts.get)
         mins = [x['min'] for x in v if x['min'] is not None]
-        sirs = [x['smin'] for x in v]
+        sirs = [x['sira'] for x in v]
         out.append({
             'ad': ad, 'slug': slug(ad), 'pt': pt, 'prog': len(v), 'kont': kont, 'yer': yer,
             'acik': sum(x['acik'] for x in v), 'fazla': sum(x['fazla'] for x in v),
@@ -61,6 +65,9 @@ def varyant(rows):
             'enDusukPuan': min(mins) if mins else None,
             'enIyiSira': min(sirs), 'enDipSira': max(sirs),
             'baraj': baraj_bul(ad),
+            # kontenjanin yuzde kaci RESMI siraya dayaniyor (gerisi tahmin)
+            'resmiPay': round(100 * sum(x['tk'] for x in v if x['sirakaynak'] == 'resmi')
+                              / max(1, kont), 1),
             'bandlar': bandla(v, baraj_bul(ad)),
         })
     out.sort(key=lambda o: (o['dilim'], o['ad']))   # esit dilimde ad ile sabitle

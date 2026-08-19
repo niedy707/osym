@@ -66,31 +66,59 @@ class VeriDegismezleri(unittest.TestCase):
         self.assertEqual(sum(r['acik'] for r in T), 54)
         self.assertEqual(sum(r['fazla'] for r in T), 3)
 
-    def test_barajlar(self):
-        """Bir bolumun en dipteki programi, OSYM barajinin hemen ALTINDA olmali.
+    def test_resmi_sira_kaynakla_ayni(self):
+        """Gosterilen sira, resmi kaynakla birebir olmali (varsa)."""
+        import os
+        yol = 'kaynak/yokatlas_basari_sirasi.json'
+        if not os.path.exists(yol):
+            self.skipTest('resmî sıra dosyası yok')
+        resmi = json.load(open(yol, encoding='utf-8'))
+        n = 0
+        for r in self.rows:
+            if r.get('sirakaynak') == 'resmi':
+                self.assertEqual(r['sira'], int(resmi[r['kod']]), r['kod'])
+                self.assertEqual(r['sira'], r['rsira'])
+                n += 1
+        self.assertGreater(n, 18000, 'resmî sıra sayısı beklenenden az')
 
-        Modelin tek gercek dogruluk testi bu. Sapma su an %0,1-1,5; %3'u asarsa
-        degisiklik yanlistir, veri degil.
+    def test_sira_kaynagi_tutarli(self):
+        for r in self.rows:
+            if r['sirakaynak'] == 'tahmini':
+                self.assertIsNone(r['rsira'])
+                self.assertEqual(r['sira'], r['smin'])
+            elif r['sirakaynak'] is None:
+                self.assertIsNone(r['sira'])
+
+    def test_barajlar(self):
+        """Bir bolumun en dipteki programi, OSYM barajinin ALTINDA olmali.
+
+        Siralar artik cogunlukla RESMI oldugu icin bu bir dogruluk testi degil,
+        veri butunlugu testi: resmi sira barajin ustune cikamaz. Tahmine dusen
+        programlar icin %3 tolerans korunuyor.
         """
         BARAJ = {'Tıp': 50_000, 'Diş Hekimliği': 80_000, 'Eczacılık': 100_000,
                  'Hukuk': 100_000, 'Mimarlık': 250_000, 'Bilgisayar Mühendisliği': 300_000,
                  'Makine Mühendisliği': 300_000, 'Elektrik-Elektronik Mühendisliği': 300_000,
                  'Okul Öncesi Öğretmenliği': 300_000, 'Türkçe Öğretmenliği': 300_000}
         for bolum, baraj in BARAJ.items():
-            sirs = [r['smin'] for r in self.rows
-                    if r['base'] == bolum and r['duzey'] == 'Lisans' and r['smin']]
-            self.assertTrue(sirs, f'{bolum}: program bulunamadi')
-            dip = max(sirs)
+            prog = [r for r in self.rows
+                    if r['base'] == bolum and r['duzey'] == 'Lisans' and r['sira']]
+            self.assertTrue(prog, f'{bolum}: program bulunamadi')
+            dip_r = max((r['sira'] for r in prog if r['sirakaynak'] == 'resmi'), default=None)
+            if dip_r is not None:
+                self.assertLessEqual(dip_r, baraj,
+                                     f'{bolum}: RESMI en dip sira {dip_r:,} > baraj {baraj:,}')
+            dip = max(r['sira'] for r in prog)
             sapma = abs(dip - baraj) / baraj
             self.assertLess(sapma, 0.03,
                             f'{bolum}: baraj {baraj:,}, en dip sira {dip:,}, sapma %{sapma*100:.1f}')
 
     def test_yuzde_alani_puan_turune_gore(self):
         for r in self.rows:
-            if r.get('yuzde') is None:
+            if r.get('yuzde') is None or r.get('sira') is None:
                 continue
             self.assertLessEqual(r['yuzde'], 100.0001)
-            beklenen = 100 * r['smin'] / rank_model.NTOT[r['pt']]
+            beklenen = 100 * r['sira'] / rank_model.NTOT[r['pt']]
             self.assertAlmostEqual(r['yuzde'], beklenen, places=3)
 
     def test_550_ustu_ekstrapolasyon_isaretli(self):
