@@ -344,6 +344,16 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 
 <!-- ============ GRAFİKLER ============ -->
 <section id="tab-grafik" class="hidden">
+  <div class="tbar">
+    <div class="tbinfo" id="ginfo"></div>
+    <select id="gmod" class="mini" aria-label="Gösterilecek bölümler">
+      <option value="20" selected>en çok kontenjanlı 20</option>
+      <option value="50">en çok kontenjanlı 50</option>
+      <option value="100">en çok kontenjanlı 100</option>
+      <option value="9999">hepsi</option>
+      <option value="elit">kontenjanı az ama rekabetçi ilk 20</option>
+    </select>
+  </div>
   <div id="gwrap"></div>
 </section>
 
@@ -622,6 +632,7 @@ function bind(){
   $('#bcsv').onclick=()=>indirProgram(bolumRows(),`2026-yks-${norm(seciliBolum).replace(/\s+/g,'-')}.csv`);
   ['#okont','#opt','#olimit','#oq','#osort'].forEach(s=>$(s).addEventListener('input',renderOzet));
   $('#ocsv').onclick=indirOzet;
+  $('#gmod').addEventListener('input',renderGrafik);
   $('#osrcbtn').onclick=()=>{
     const acik=!$('#osrcrow').classList.contains('hidden');
     $('#osrcrow').classList.toggle('hidden',acik);
@@ -945,11 +956,23 @@ async function bolumAc(ad){
 
 /* ---------- GRAFİK GALERİSİ ---------- */
 function grafikSecim(){
-  const hepsi=bolumOzet();
-  const buyuk=hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,20);
-  const ad=new Set(buyuk.map(o=>o.ad));
-  const elit=hepsi.filter(o=>!ad.has(o.ad)&&o.kont>=100).slice().sort((a,b)=>a.dilim-b.dilim).slice(0,8);
-  return {buyuk,elit};
+  const hepsi=bolumOzet(), mod=($('#gmod')||{}).value||'20';
+  if(mod==='elit'){
+    // Kontenjan alt sınırı YOK: tek kişilik bir programın bile yerleşeninin
+    // yüzdelik dilimi hesaba katılır. En çok kontenjanlı 20 hariç tutulur.
+    const buyuk=new Set(hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,20).map(o=>o.ad));
+    return {liste:hepsi.filter(o=>!buyuk.has(o.ad)).slice().sort((a,b)=>a.dilim-b.dilim).slice(0,20),
+            baslik:'Kontenjanı az ama rekabetçi ilk 20 bölüm',
+            alt:'En çok kontenjanlı 20 bölüm hariç tutuldu. Kontenjan alt sınırı yok — tek kişilik '+
+                'bir programın yerleşeni bile hesaba katılır. Sıralama, kendi puan türü içindeki '+
+                'ortalama yüzdelik dilime göre (küçük = daha rekabetçi).'};
+  }
+  const n=+mod||20;
+  const liste=hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,n);
+  return {liste,
+          baslik: n>=hepsi.length ? `Tüm bölümler (${fmt(hepsi.length)})` : `En çok kontenjanlı ${fmt(n)} bölüm`,
+          alt:'Kontenjan sayısına göre sıralı. Her grafik, o bölümün kontenjanının hangi sıralama '+
+              'bandından dolduğunu gösterir; sıralamalar tahmindir.'};
 }
 function gKart(o){
   return `<div class="gcard">
@@ -961,18 +984,13 @@ function gKart(o){
   </div>`;
 }
 function renderGrafik(){
-  const {buyuk,elit}=grafikSecim();
+  const {liste,baslik,alt}=grafikSecim();
+  $('#ginfo').textContent=`${fmt(liste.length)} bölüm`;
   $('#gwrap').innerHTML=`
-    <div class="ghead"><h2>En çok kontenjanlı 20 bölüm</h2>
-      <div class="gs">Her grafik, o bölümün kontenjanının hangi sıralama bandından dolduğunu gösterir.
-      Sıralamalar tahmindir — ÖSYM'nin "Yerleştirme Puanlarının Yığınsal Dağılımı" tablosundan hesaplanır.</div></div>
-    <div class="grid2" id="g1">${buyuk.map(gKart).join('')}</div>
-    <div class="ghead" style="margin-top:18px"><h2>Kontenjanı küçük ama en rekabetçi 8 bölüm</h2>
-      <div class="gs">İlk 20'ye giremeyecek kadar küçük (en az 100 kontenjan) ama kendi puan türü içinde
-      en iyi yüzdelik dilime sahip bölümler.</div></div>
-    <div class="grid2" id="g2">${elit.map(gKart).join('')}</div>`;
-  const kartlar=[...buyuk,...elit], barlar=$$('#gwrap .gcard .gbar');
-  kartlar.forEach((o,i)=>{ if(barlar[i]) cizgi(barlar[i], o.bandlar||[]); });
+    <div class="ghead"><h2>${baslik}</h2><div class="gs">${alt}</div></div>
+    <div class="grid2" id="g1">${liste.map(gKart).join('')}</div>`;
+  const barlar=$$('#gwrap .gcard .gbar');
+  liste.forEach((o,i)=>{ if(barlar[i]) cizgi(barlar[i], o.bandlar||[]); });
   $$('#gwrap .who.tik').forEach(el=>{
     const ac=()=>bolumAc(el.dataset.bolum);
     el.onclick=ac;
