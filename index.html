@@ -180,6 +180,24 @@ th .ar{color:var(--accent);margin-left:3px}
   justify-content:flex-end;padding-right:7px;font-size:11px;font-weight:650;color:#04140d}
 .kotalbl{font-size:11.5px;color:var(--dim)}
 .loading{padding:50px 20px;text-align:center;color:var(--dim)}
+.ctools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.ctools input{flex:1;min-width:150px;max-width:260px}
+.ctools button{width:auto;flex:0 0 auto}
+.ctools .csay{color:var(--dim);font-size:11.5px;margin-left:auto}
+.cbox{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:11px;
+  padding:10px 10px 4px;overflow:hidden}
+#cv{width:100%;display:block;touch-action:pan-y}
+.ctip{position:absolute;pointer-events:none;background:rgba(12,15,20,.95);
+  border:1px solid var(--line);border-radius:8px;padding:7px 10px;font-size:11.5px;
+  color:var(--fg);white-space:nowrap;box-shadow:0 6px 20px rgba(0,0,0,.5);z-index:3}
+.ctip .t{font-weight:700;margin-bottom:3px}
+.ctip .s{color:var(--dim)}
+#clegend{display:flex;flex-wrap:wrap;gap:5px;margin-top:11px}
+.lg{display:flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;
+  background:var(--chip);border:1px solid var(--line);cursor:pointer;font-size:11px;user-select:none}
+.lg .sw{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.lg.off{opacity:.35}
+.lg:hover{background:#2b313d}
 /* Oran moduna geçince ~3 sn görünen bilgilendirme */
 #toast{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
   padding:24px;pointer-events:none;background:rgba(9,11,15,.25);
@@ -376,6 +394,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <div class="seg sm hidden" id="golcu" role="group" aria-label="Bar ölçüsü">
     <div class="segbtn on" data-olcu="sayi" title="Bardaki değer: o banttaki kontenjan sayısı">sayı</div>
     <div class="segbtn" data-olcu="oran" title="Bardaki değer: bandın yüzde kaçını doldurmuş">oran</div>
+    <div class="segbtn" data-olcu="cizgi" title="Tüm bölümlerin sıra dağılımı, tek çizgi grafikte">dağılım</div>
   </div>
   <select id="gmod" class="mini hidden" aria-label="Gösterilecek bölümler">
     <option value="20" selected>en çok kontenjanlı 20</option>
@@ -429,6 +448,41 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 <!-- ============ GRAFİKLER ============ -->
 <section id="tab-grafik" class="hidden">
   <div id="gwrap"></div>
+  <div id="cwrap" class="hidden">
+    <div class="note" id="cnote"></div>
+    <div class="ctools">
+      <div class="seg sm" id="cxseg" role="group" aria-label="Sıralama aralığı">
+        <div class="segbtn on" data-x="100">100 bin</div>
+        <div class="segbtn" data-x="300">300 bin</div>
+        <div class="segbtn" data-x="1000">1 milyon</div>
+        <div class="segbtn" data-x="0">hepsi</div>
+      </div>
+      <div class="seg sm" id="colcek" role="group" aria-label="Y ekseni ölçeği">
+        <div class="segbtn" data-olc="tepe" title="Her eğri kendi tepesine göre ölçeklenir">tepe=100</div>
+        <div class="segbtn on" data-olc="dogrusal" title="Ortak eksen, gerçek kişi sayısı">doğrusal</div>
+        <div class="segbtn" data-olc="log">log</div>
+      </div>
+      <select id="ckac" class="mini" aria-label="Kaç bölüm">
+        <option value="10" selected>en çok kontenjanlı 10</option>
+        <option value="25">en çok kontenjanlı 25</option>
+        <option value="50">en çok kontenjanlı 50</option>
+        <option value="100">en çok kontenjanlı 100</option>
+        <option value="9999">hepsi</option>
+      </select>
+      <span class="csay" id="csay"></span>
+    </div>
+    <div class="cbox"><canvas id="cv"></canvas><div class="ctip hidden" id="ctip"></div></div>
+    <div class="ctools" style="margin-top:12px">
+      <div class="seg sm" id="ccoklu" role="group" aria-label="Seçim kipi">
+        <div class="segbtn on" data-coklu="0" title="Tıklanan bölüm tek başına gösterilir">tek seçim</div>
+        <div class="segbtn" data-coklu="1" title="Birden fazla bölüm seçip karşılaştır">çoklu seçim</div>
+      </div>
+      <input id="cara" placeholder="bölüm ara…" autocomplete="off">
+      <button id="ctemiz">seçimi temizle</button>
+    </div>
+    <div id="clegend"></div>
+    <div class="foot" id="cfoot"></div>
+  </div>
 </section>
 
 <!-- ============ BÖLÜM PANELİ ============ -->
@@ -709,7 +763,7 @@ function init(){
   $('#sortsel').value='min|-1';
   $('#presets').innerHTML=Object.entries(PRESETS).map(([k,v])=>`<div class="chip" data-preset="${k}">${v.ad}</div>`).join('')
     +Object.entries(FLAGS).map(([k,v])=>`<div class="chip" data-flag="${k}">${v}</div>`).join('');
-  bind(); renderOzet(); renderGrafik(); aktifSekmeYenile();
+  bind(); cizgiBagla(); renderOzet(); renderGrafik(); aktifSekmeYenile();
   const acilis=yoldakiBolum();
   if(acilis) bolumAc(acilis,true);          // adres çubuğundan gelindi
   else if(location.pathname!=='/') adresYaz(null,true);   // tanınmayan yol -> kök
@@ -782,6 +836,11 @@ function bind(){
   $$('#golcu .segbtn').forEach(b=>b.onclick=()=>{
     gOlcu=b.dataset.olcu;
     $$('#golcu .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.olcu===gOlcu));
+    const cz=gOlcu==='cizgi';
+    $('#cwrap').classList.toggle('hidden',!cz);
+    $('#gwrap').classList.toggle('hidden',cz);
+    $('#gmod').classList.toggle('hidden',cz);
+    if(cz){ renderCizgi(); return }
     renderGrafik(); if(!$('#tab-bolum').classList.contains('hidden')) bolumPanel();
     if(gOlcu==='oran') toast(
       '<b>Oran modu.</b> Bantlar eşit genişlikte değil — 1–1.000 aralığında 1.000 aday varken '+
@@ -1191,6 +1250,208 @@ function renderGrafik(){
     el.onclick=ac;
     el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();ac()} };
   });
+}
+
+/* ---------- ÇİZGİ GRAFİK: bölümlerin sıra dağılımı ---------- */
+let DAG=null, dagSozu=null, cSecili=new Set(), cVurgu=-1, cOlcek='dogrusal',
+    cCoklu=false, cXmax=100;   // cXmax: gosterilecek en buyuk sira (bin), 0=hepsi
+function dagVeri(){
+  if(dagSozu) return dagSozu;
+  dagSozu=fetch('data/dagilim.json').then(r=>r.json()).then(d=>{DAG=d;return d});
+  return dagSozu;
+}
+const cRenk=i=>`hsl(${(i*137.508)%360} ${62+(i%3)*12}% ${58+(i%2)*10}%)`;
+const cSeri=()=>((DAG&&DAG.bolumler[kktcMode])||[]);
+
+async function renderCizgi(){
+  $('#cnote').innerHTML=`<b>Bölümlerin sıra dağılımı.</b> Her programın yerleşeni, kendi
+    tavan–taban sıra aralığına düzgün dağıtılıp 1.000'lik kovalarda toplandı —
+    <b>modellenmiş dağılımdır</b>, öğrenci başına ölçüm değildir. Amaç bölümleri birbiriyle
+    kıyaslamak değil, her bölümün <b>desenini</b> görmek; bu yüzden farklı puan türleri aynı
+    eksende. Sıralar puan türleri arasında karşılaştırılabilir değildir.`;
+  if(!DAG){ $('#csay').textContent='yükleniyor…'; await dagVeri(); }
+  if(!cSecili.size) ilkN(+$('#ckac').value||10);
+  cizCizgi(); lejant();
+  const e=DAG.eleme||{}, S=cSeri();
+  $('#cfoot').innerHTML=`<b style="color:var(--fg)">Hangi bölümler var?</b> Grafikte
+    <b style="color:var(--fg)">${fmt(S.length)}</b> bölüm listeleniyor. Dışarıda bırakılanlar:
+    toplam kontenjanı <b style="color:var(--fg)">${fmt(e.kontenjan||50)}</b>'den az <b>ve</b>
+    ilk <b style="color:var(--fg)">${fmt(e.sira||10000)}</b> sıra içinde tek bir yerleşeni bile
+    olmayan bölümler. Kontenjanı küçük olsa da ilk ${fmt(e.sira||10000)}'e giren bir öğrencisi
+    olan bölüm grafiğe <b style="color:var(--fg)">dahildir</b>.
+    <br><br><b style="color:var(--fg)">Bu grafikte ne resmî, ne tahmini?</b>
+    Resmî: her programın <b style="color:var(--fg)">kontenjanı, yerleşen sayısı, taban puanı,
+    taban başarı sırası</b> (YÖK Atlas) ve <b style="color:var(--fg)">tavan puanı</b> (ÖSYM).
+    Tahmini: tavan puanın karşılık geldiği <b class="tah">sıra</b> (modelimiz, medyan sapma %0,25)
+    ve bir programın yerleşenlerinin bu iki sıra <b class="tah">arasında nasıl dağıldığı</b>.
+    Öğrenci başına sıra listesi hiçbir resmî kaynakta yayımlanmıyor — YÖK Atlas da yalnız taban
+    sırayı veriyor — bu yüzden aradaki dağılım düzgün kabul edilip modellendi.
+    <b style="color:var(--fg)">Yani eğrilerin uç noktaları ölçüm, arasındaki şekil tahmindir.</b>
+    <br><br><b style="color:var(--fg)">Dikey toplam neden 1.000 değil?</b> 1.000 sıralık bir
+    aralıkta 1.000 aday var, ama hepsi bir lisans programına yerleşmiyor; bir kısmı ön lisansa,
+    açıköğretime gidiyor ya da hiç yerleşmiyor. İlk sıralarda toplam 1.000'e dayanıyor
+    (SAY'da 0–1.000 aralığında tam <b style="color:var(--fg)">1.000</b>), sıra kötüleştikçe
+    düşüyor (SAY'da 99.000–100.000 aralığında 573, 499.000–500.000 aralığında 33).
+    Farklı puan türleri toplandığında 1.000 aşılabilir; çünkü <b style="color:var(--fg)">aynı
+    aday hem SAY hem EA hem SÖZ sıralamasında yer alır</b> — bunlar farklı kişiler değildir.
+    Kısıt her puan türü için ayrı uygulanır ve sağlanır.`;
+}
+// Kontenjana gore ilk N bolumu sec (veri zaten kontenjana gore sirali gelir)
+function ilkN(n){ cSecili=new Set(cSeri().slice(0,n).map(b=>b.ad)) }
+function lejant(){
+  const q=norm($('#cara').value), S=cSeri();
+  $('#clegend').innerHTML=S.map((b,i)=>
+    (q&&!norm(b.ad).includes(q))?'':
+    `<div class="lg${cSecili.has(b.ad)?'':' off'}" data-i="${i}" title="${fmt(b.yer)} yerleşen · ${b.pt}">
+       <span class="sw" style="background:${cRenk(i)}"></span>${b.ad}</div>`).join('');
+  $$('#clegend .lg').forEach(el=>{
+    el.onclick=()=>{
+      const ad=cSeri()[+el.dataset.i].ad;
+      if(cCoklu){ cSecili.has(ad)?cSecili.delete(ad):cSecili.add(ad) }
+      else { cSecili = (cSecili.size===1&&cSecili.has(ad)) ? new Set() : new Set([ad]) }
+      lejant(); cizCizgi();
+    };
+    el.onmouseenter=()=>{cVurgu=+el.dataset.i; cizCizgi()};
+    el.onmouseleave=()=>{cVurgu=-1; cizCizgi()};
+  });
+  $('#csay').textContent=`${cSecili.size} bölüm seçili · ${S.length} bölüm arasından`;
+}
+function cizCizgi(){
+  const S=cSeri(); if(!S.length) return;
+  const cv=$('#cv'), dpr=window.devicePixelRatio||1;
+  const W=cv.parentElement.clientWidth-20, H=Math.max(300,Math.min(520,Math.round(W*0.5)));
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.height=H+'px';
+  const g=cv.getContext('2d'); g.setTransform(dpr,0,0,dpr,0,0); g.clearRect(0,0,W,H);
+  const ML=52,MR=14,MT=14,MB=30, PW=W-ML-MR, PH=H-MT-MB;
+  const acik=S.filter(b=>cSecili.has(b.ad));
+  if(!acik.length){ g.fillStyle='#9aa3b2'; g.font='12px system-ui';
+    g.fillText('Bölüm seçili değil — aşağıdaki listeden seçin.',ML,MT+20); return; }
+  const dogal=Math.max(...acik.map(b=>b.bas+b.v.length));
+  const xMax=cXmax?Math.min(cXmax,dogal):dogal;
+  const gor0=b=>b.v.filter((_,j)=>b.bas+j<=(cXmax||1e9));
+  const yMax=cOlcek==='tepe'?1:Math.max(1,...acik.map(b=>Math.max(0,...gor0(b))));
+  const X=k=>ML+PW*k/xMax;
+  const Y=v=>{
+    if(cOlcek==='tepe') return MT+PH*(1-v);
+    if(cOlcek==='log'){const m=Math.log10(yMax+1); return MT+PH*(1-Math.log10(v+1)/m)}
+    return MT+PH*(1-v/yMax);
+  };
+  // Izgara + eksenler. "tepe" modunda bir eğrinin üzerindeyken sol eksen o
+  // eğrinin GERÇEK kişi sayılarını gösterir ve çizginin rengini alır; böylece
+  // desen normalize kalırken rakam okunabilir olur.
+  const vurguSeri = (cVurgu>=0 && cSecili.has(S[cVurgu].ad)) ? S[cVurgu] : null;
+  const eksenTepe = vurguSeri ? Math.max(1,...gor0(vurguSeri)) : null;
+  const eksenRenk = (cOlcek==='tepe' && vurguSeri) ? cRenk(cVurgu) : '#7d8797';
+  g.strokeStyle='#252b36'; g.font='10px system-ui'; g.lineWidth=1;
+  for(let i=0;i<=5;i++){
+    const y=MT+PH*i/5; g.beginPath(); g.moveTo(ML,y); g.lineTo(W-MR,y); g.stroke();
+    let et;
+    if(cOlcek==='tepe') et = eksenTepe!=null
+        ? fmt(Math.round(eksenTepe*(1-i/5)))
+        : '%'+Math.round(100*(1-i/5));
+    else if(cOlcek==='log') et=fmt(Math.round(Math.pow(10,Math.log10(yMax+1)*(1-i/5))-1));
+    else et=fmt(Math.round(yMax*(1-i/5)));
+    g.textAlign='right'; g.fillStyle=eksenRenk; g.fillText(et,ML-6,y+3);
+  }
+  const adim=xMax>1000?200:xMax>400?100:xMax>150?50:10;
+  g.textAlign='center';
+  for(let k=0;k<=xMax;k+=adim){
+    const x=X(k); g.strokeStyle='#1f2430'; g.beginPath(); g.moveTo(x,MT); g.lineTo(x,MT+PH); g.stroke();
+    g.fillStyle='#7d8797'; g.fillText(fmt(k),x,MT+PH+15);
+  }
+  g.fillStyle='#9aa3b2'; g.textAlign='center';
+  g.fillText('sıralama (×1.000)',ML+PW/2,H-4);
+  g.save(); g.translate(11,MT+PH/2); g.rotate(-Math.PI/2);
+  g.fillStyle = (cOlcek==='tepe'&&vurguSeri) ? cRenk(cVurgu) : '#9aa3b2';
+  g.fillText(cOlcek==='tepe'
+    ? (vurguSeri ? vurguSeri.ad+' — kişi sayısı' : 'kendi tepesine oran')
+    : 'kişi sayısı',0,0);
+  g.restore();
+  // eğriler
+  const gorunur=b=>b.v.slice(Math.max(0,-b.bas), Math.max(0,xMax-b.bas));
+  const ciz=(b,i,vurgu)=>{
+    const tepe=Math.max(...(gorunur(b).length?gorunur(b):b.v))||1;
+    g.strokeStyle=cRenk(i); g.lineWidth=vurgu?2.4:1.1;
+    g.globalAlpha=vurgu?1:(cVurgu>=0?0.18:0.62);
+    g.beginPath();
+    let ilk=true;
+    b.v.forEach((v,j)=>{const k=b.bas+j; if(k>xMax) return;
+      const x=X(k), y=Y(cOlcek==='tepe'?v/tepe:v);
+      ilk?(g.moveTo(x,y),ilk=false):g.lineTo(x,y)});
+    g.stroke(); g.globalAlpha=1;
+  };
+  acik.forEach((b,idx)=>{const i=S.indexOf(b); if(i!==cVurgu) ciz(b,i,false)});
+  // tepe noktaları + etiketleri (çakışanı atla)
+  const yerler=[];
+  const etiketCiz=(b,i,zorla)=>{
+    const gv=gor0(b); if(!gv.length) return;
+    const tepe=Math.max(...gv), j=b.v.indexOf(tepe);
+    if(b.bas+j>xMax) return;
+    const x=X(b.bas+j), y=Y(cOlcek==='tepe'?1:tepe);
+    g.fillStyle=cRenk(i); g.beginPath(); g.arc(x,y,zorla?4:2.6,0,7); g.fill();
+    const et=fmt(Math.round(tepe));
+    g.font=(zorla?'700 ':'')+'10px system-ui'; g.textAlign='left';
+    const w=g.measureText(et).width, bx=x+6, by=y-6;
+    if(!zorla && yerler.some(r=>Math.abs(r[0]-bx)<w+10 && Math.abs(r[1]-by)<12)) return;
+    yerler.push([bx,by]);
+    if(zorla){ g.fillStyle='rgba(12,15,20,.85)'; g.fillRect(bx-3,by-10,w+6,14); g.fillStyle=cRenk(i); }
+    g.fillText(et,bx,by);
+  };
+  acik.forEach(b=>{const i=S.indexOf(b); if(i!==cVurgu) etiketCiz(b,i,false)});
+  if(cVurgu>=0 && cSecili.has(S[cVurgu].ad)){ ciz(S[cVurgu],cVurgu,true); etiketCiz(S[cVurgu],cVurgu,true) }
+  cv._ctx={ML,MR,MT,MB,PW,PH,xMax,X,Y,acik,S};
+}
+function cizgiBagla(){
+  const cv=$('#cv'), tip=$('#ctip');
+  const bul=e=>{
+    const c=cv._ctx; if(!c) return -1;
+    const rect=cv.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    const k=Math.round((mx-c.ML)/c.PW*c.xMax);
+    let iyi=-1, enYakin=1e9, deg=0;
+    c.acik.forEach(b=>{
+      const j=k-b.bas; if(j<0||j>=b.v.length) return;
+      const gv=b.v.filter((_,q)=>b.bas+q<=(cXmax||1e9));
+      const tepe=Math.max(1,...gv);
+      const y=c.Y(cOlcek==='tepe'?b.v[j]/tepe:b.v[j]);
+      const d=Math.abs(y-my);
+      if(d<enYakin){enYakin=d; iyi=c.S.indexOf(b); deg=b.v[j]}
+    });
+    return enYakin<26?[iyi,k,deg]:[-1,k,0];
+  };
+  cv.onmousemove=e=>{
+    const [i,k,v]=bul(e);
+    if(i!==cVurgu){cVurgu=i; cizCizgi()}
+    if(i<0){tip.classList.add('hidden'); return}
+    const b=cSeri()[i], rect=cv.getBoundingClientRect();
+    tip.innerHTML=`<div class="t" style="color:${cRenk(i)}">${b.ad}</div>
+      <div class="s">${fmt(k*1000)}–${fmt((k+1)*1000)}. sıra · <b style="color:var(--fg)">${fmt(Math.round(v))}</b> kişi</div>
+      <div class="s">${b.pt} · toplam ${fmt(b.yer)} yerleşen</div>`;
+    tip.classList.remove('hidden');
+    const tw=tip.offsetWidth||180;
+    tip.style.left=Math.min(rect.width-tw-8, Math.max(4, e.clientX-rect.left+12))+'px';
+    tip.style.top=Math.max(4, e.clientY-rect.top-10)+'px';
+  };
+  cv.onmouseleave=()=>{cVurgu=-1; tip.classList.add('hidden'); cizCizgi()};
+  $$('#colcek .segbtn').forEach(b=>b.onclick=()=>{
+    cOlcek=b.dataset.olc;
+    $$('#colcek .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.olc===cOlcek));
+    cizCizgi();
+  });
+  $('#cara').addEventListener('input',lejant);
+  $('#ctemiz').onclick=()=>{cSecili.clear(); lejant(); cizCizgi()};
+  $('#ckac').addEventListener('input',()=>{ilkN(+$('#ckac').value||10); lejant(); cizCizgi()});
+  $$('#cxseg .segbtn').forEach(b=>b.onclick=()=>{
+    cXmax=+b.dataset.x;
+    $$('#cxseg .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.x===b.dataset.x));
+    cizCizgi();
+  });
+  $$('#ccoklu .segbtn').forEach(b=>b.onclick=()=>{
+    cCoklu=b.dataset.coklu==='1';
+    $$('#ccoklu .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.coklu===b.dataset.coklu));
+  });
+  let z; window.addEventListener('resize',()=>{clearTimeout(z);z=setTimeout(()=>{
+    if(!$('#cwrap').classList.contains('hidden')) cizCizgi()},220)});
 }
 
 /* ---------- ÜNİVERSİTE / TÜM BÖLÜM ÖZETİ ---------- */
