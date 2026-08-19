@@ -431,6 +431,12 @@ const fmt=n=>n==null?'—':n.toLocaleString('tr-TR');
 const fmtP=n=>n==null?'—':n.toFixed(3).replace('.',',');
 const fmtY=n=>n==null?'—':'%'+n.toFixed(2).replace('.',',');
 const pct=(a,b)=>b?'%'+(100*a/b).toFixed(2).replace('.',','):'—';
+const dolKisa=d=>{
+  if(d==null) return '—';
+  if(d>=100) return '%100';
+  if(d>=99) return '%'+(Math.floor(d*10)/10).toFixed(1).replace('.',',');  // 99,73 -> %99,7
+  return '%'+Math.floor(d);                                                 // 98,6 -> %98
+};
 const norm=s=>(s||'').toLocaleLowerCase('tr-TR').replace(/ı/g,'i').replace(/ğ/g,'g')
   .replace(/ü/g,'u').replace(/ş/g,'s').replace(/ö/g,'o').replace(/ç/g,'c').replace(/â/g,'a').replace(/î/g,'i');
 const mobil=()=>window.innerWidth<768;
@@ -644,7 +650,7 @@ function renderOzet(){
         <div class="g">
           <div><div class="k">Dilim</div><div class="v">${fmtY(o.dilim)}</div></div>
           <div><div class="k">Kontenjan</div><div class="v">${fmt(o.kont)}</div></div>
-          <div><div class="k">Doluluk</div><div class="v">${o.dol==null?'—':'%'+o.dol.toFixed(1).replace('.',',')}</div></div>
+          <div><div class="k">Doluluk</div><div class="v">${dolKisa(o.dol)}</div></div>
           <div><div class="k">En dip sıra</div><div class="v">${fmt(o.enDipSira)}</div></div>
         </div></div>`).join('')+'</div>'
     : tablo(R,[
@@ -859,7 +865,7 @@ function aggKart(rows,tip){
     <div class="m">${tip==='uni'?(o.sehir+' · '+o.tur+' · '):''}${fmt(o.prog)} program</div>
     <div class="g">
       <div><div class="k">Kontenjan</div><div class="v">${fmt(o.kont)}</div></div>
-      <div><div class="k">Doluluk</div><div class="v">${o.dol==null?'—':'%'+o.dol.toFixed(1).replace('.',',')}</div></div>
+      <div><div class="k">Doluluk</div><div class="v">${dolKisa(o.dol)}</div></div>
       <div><div class="k">Açık</div><div class="v${o.acik>0?' warn':''}">${fmt(o.acik)}</div></div>
       <div><div class="k">En iyi sıra</div><div class="v">${fmt(o.enIyi)}</div></div>
     </div></div>`).join('')+'</div>';
@@ -879,7 +885,7 @@ function renderTumBolum(){
     ${TB.map((o,i)=>`<div class="r1" data-i="${i}">
       <span class="ad">${o.ad}</span>
       <span class="num w1"><b>${kisaSayi(o.kont)}</b></span>
-      <span class="num w2"><b>${o.dol==null?'—':'%'+Math.round(o.dol)}</b></span>
+      <span class="num w2"><b>${dolKisa(o.dol)}</b></span>
       <span class="num w3"><b>${o.enIyi==null?'—':kisaSayi(o.enIyi)}</b></span>
       <span class="ok">›</span></div>`).join('')}</div>`
     : `<div class="card" style="color:var(--dim)">Eşleşen bölüm yok.</div>`;
