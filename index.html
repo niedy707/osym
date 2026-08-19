@@ -781,7 +781,7 @@ function cizgi(el,items){
 }
 function bolumPanel(){
   const B=bolumBilgi(),T=bolumAll(),AD=B.ad.toLocaleUpperCase('tr-TR');
-  const kaynak=`2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · niedy707.github.io/osym`;
+  const kaynak=`2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app`;
   const alt=`${B.ad} · ${T.length} program · puan türü ${B.pt}`;
   ['#kt1','#kt2','#kt3','#kt4','#kt5','#kt6'].forEach(id=>$(id).textContent=AD);
   ['#cs2','#cs3','#cs4','#cs5','#cs6'].forEach(id=>$(id).textContent=alt);

@@ -100,7 +100,11 @@ badge; the Twitter variant must not.
 
 ## Deployment
 
-Live at <https://niedy707.github.io/osym/> (primary) and <https://osym-tau.vercel.app> (mirror).
+Live at <https://osym-yks.vercel.app> (primary). <https://niedy707.github.io/osym/> is a redirect
+stub served from `docs/` — it must keep working, older ekşi sözlük entries and a tweet link to it.
+
+Deploy with `./deploy.sh`, never bare `vercel --prod`: `osym-yks.vercel.app` is an alias, not a
+project domain, so it must be re-pointed at each new production deployment.
 
 **The repo name must stay lowercase.** GitHub Pages paths are case-sensitive, while ekşi sözlük and
 several other platforms display link text lowercased — a repo named `OSYM` gave readers a 404 when they

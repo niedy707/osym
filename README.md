@@ -163,8 +163,8 @@ bazında pozitif boşlukların toplamı) · `fazla` (eşit puan nedeniyle konten
 
 ## Canlı sürüm
 
-- **Uygulama:** https://osym-tau.vercel.app
-- **Ayna (GitHub Pages):** https://niedy707.github.io/osym/
+- **Uygulama:** https://osym-yks.vercel.app
+- **Kısa yönlendirme:** https://niedy707.github.io/osym/ → yukarıdaki adrese yönlenir
 - **Paylaşım görseli:** [`tip-25k.png`](tip-25k.png) — `paylas.html` dosyasından üretilir
 
 ## Lisans ve sorumluluk reddi
