@@ -104,6 +104,10 @@ button.pri{background:var(--accent);color:#04101f;border-color:var(--accent);fon
   padding:13px;margin-bottom:12px}
 .picker label{display:block;color:var(--dim);font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
 .picker select{font-size:17px;font-weight:650;padding:11px 30px 11px 12px}
+.prow{display:flex;gap:8px;align-items:stretch}
+.prow select{flex:1;min-width:0}
+.prow button{width:auto;flex:0 0 auto;padding:0 16px}
+.prow button.ok{background:var(--accent2);border-color:var(--accent2);color:#04140d}
 .pmeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;font-size:11.5px;color:var(--dim);align-items:center}
 .pmeta b{background:var(--chip);border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--fg);font-weight:600}
 .tblwrap{background:var(--panel);border:1px solid var(--line);border-radius:11px;overflow:auto;
@@ -334,9 +338,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <div class="tabs">
     <div class="tab on" data-tab="grafik">Grafikler</div>
     <div class="tab" data-tab="ozet">Bölüm Özeti</div>
-    <div class="tab" data-tab="bolum" data-bolum="Tıp">Tıp</div>
-    <div class="tab" data-tab="bolum" data-bolum="Bilgisayar Mühendisliği">Bilgisayar Müh.</div>
-    <select class="tabsel" id="tabbsel" aria-label="Diğer bölümler"></select>
+    <select class="tabsel" id="tabbsel" aria-label="Bölümler"></select>
     <div class="tab" data-tab="all">Tüm Programlar</div>
     <div class="tab" data-tab="uni">Üniversiteler</div>
     <div class="tab" data-tab="info">Yöntem</div>
@@ -404,7 +406,10 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 <section id="tab-bolum" class="hidden">
   <div class="picker">
     <label for="bsel">İncelenecek bölüm</label>
-    <select id="bsel"></select>
+    <div class="prow">
+      <select id="bsel"></select>
+      <button id="paylas" class="pri" title="Bu bölümün bağlantısını kopyala">Paylaş</button>
+    </div>
     <div class="pmeta" id="pmeta"></div>
   </div>
   <div class="note amber" id="bnote"></div>
@@ -575,6 +580,41 @@ function tamVeri(){
 }
 const bolumOzet=()=>(OZET&&OZET.bolumler[kktcMode])||[];
 
+/* ---- Paylaşılabilir bölüm adresleri: /hemsirelik gibi ----
+   Vercel tüm bilinmeyen yolları index.html'e yönlendiriyor (vercel.json),
+   eşleştirmeyi burada yapıyoruz. Slug'lar veri üretiminde hesaplanıp
+   ozet.json'a yazılıyor; istemcide ikinci bir slug mantığı tutulmuyor. */
+function slugAra(sl){
+  if(!sl||!OZET) return null;
+  sl=sl.toLowerCase();
+  for(const v of ['in','out']){
+    const b=(OZET.bolumler[v]||[]).find(x=>x.slug===sl);
+    if(b) return b.ad;
+  }
+  return null;
+}
+const bolumSlug=ad=>{
+  for(const v of ['in','out']){
+    const b=(OZET.bolumler[v]||[]).find(x=>x.ad===ad);
+    if(b) return b.slug;
+  }
+  return null;
+};
+function yoldakiBolum(){
+  const yol=decodeURIComponent(location.pathname).replace(/^\/+|\/+$/g,'');
+  return yol ? slugAra(yol) : null;
+}
+function adresYaz(ad,degistir){
+  const sl = ad ? bolumSlug(ad) : null;
+  const yol = sl ? '/'+sl : '/';
+  if(location.pathname===yol) return;
+  history[degistir?'replaceState':'pushState']({bolum:ad||null},'',yol+location.search);
+}
+function basligiGuncelle(ad){
+  document.title = ad ? `${ad} — 2026-YKS taban puan, kontenjan ve tahmini sıralama`
+                      : '2026-YKS Yerleştirme Verisi';
+}
+
 const COLS=[
   {k:'uni',t:'Üniversite',cls:'uni',r:d=>uniAd(d.uni)+turBadge(d)},
   {k:'sehir',t:'Şehir'},{k:'fak',t:'Fakülte/YO',cls:'uni'},{k:'prog',t:'Program',cls:'prog'},
@@ -605,10 +645,13 @@ function init(){
   window._filtreDolduruldu=false;
   BOLUMLER.forEach(b=>$('#bsel').add(new Option(b.ad,b.base)));
   $('#bsel').value=seciliBolum;
-  // sekme çubuğundaki "diğer bölümler" menüsü — kısayolu olan ikisi hariç
-  const kisayol=new Set(['Tıp','Bilgisayar Mühendisliği']);
-  $('#tabbsel').add(new Option('Diğer bölümler…',''));
-  BOLUMLER.filter(b=>!kisayol.has(b.base)).forEach(b=>$('#tabbsel').add(new Option(b.ad,b.base)));
+  // Tek "Bölümler" menüsü: en çok aranan üçü başta, kalanı alfabetik.
+  const SABIT=['Tıp','Bilgisayar Mühendisliği','Hukuk'];
+  $('#tabbsel').add(new Option('Bölümler…',''));
+  SABIT.forEach(k=>{const b=BOLUMLER.find(x=>x.base===k); if(b)$('#tabbsel').add(new Option(b.ad,b.base))});
+  BOLUMLER.filter(b=>!SABIT.includes(b.base))
+    .slice().sort((a,b)=>a.ad.localeCompare(b.ad,'tr'))
+    .forEach(b=>$('#tabbsel').add(new Option(b.ad,b.base)));
   [['min',-1,'Taban puan (yüksek→düşük)'],['min',1,'Taban puan (düşük→yüksek)'],
    ['smin',1,'Sıralama (iyi→kötü)'],['yuzde',1,'Yüzdelik dilim (iyi→kötü)'],
    ['tk',-1,'Kontenjan (çok→az)'],['acik',-1,'Açık kadro (çok→az)'],['uni',1,'Üniversite (A→Z)']]
@@ -617,6 +660,9 @@ function init(){
   $('#presets').innerHTML=Object.entries(PRESETS).map(([k,v])=>`<div class="chip" data-preset="${k}">${v.ad}</div>`).join('')
     +Object.entries(FLAGS).map(([k,v])=>`<div class="chip" data-flag="${k}">${v}</div>`).join('');
   bind(); renderOzet(); renderGrafik(); aktifSekmeYenile();
+  const acilis=yoldakiBolum();
+  if(acilis) bolumAc(acilis,true);          // adres çubuğundan gelindi
+  else if(location.pathname!=='/') adresYaz(null,true);   // tanınmayan yol -> kök
 }
 function filtreleriDoldur(){
   if(window._filtreDolduruldu||!ALL) return;
@@ -670,7 +716,9 @@ function bind(){
     const v=$('#tabbsel').value; if(!v)return;
     seciliBolum=v;$('#bsel').value=v;bolumPanel();
     sekmeAc('bolum',null);$('#tabbsel').classList.add('on')};
-  $('#bsel').onchange=async()=>{seciliBolum=$('#bsel').value;await agirSekme('bolum');sekmeIsaretle()};
+  $('#bsel').onchange=async()=>{seciliBolum=$('#bsel').value;
+    adresYaz(seciliBolum); basligiGuncelle(seciliBolum);
+    await agirSekme('bolum');sekmeIsaretle()};
   ['#bq','#bftur','#bfburs'].forEach(s=>$(s).addEventListener('input',bolumListe));
   $('#bcsv').onclick=()=>indirProgram(bolumRows(),`2026-yks-${norm(seciliBolum).replace(/\s+/g,'-')}.csv`);
   ['#okont','#opt','#olimit','#oq'].forEach(s=>$(s).addEventListener('input',renderOzet));
@@ -681,6 +729,20 @@ function bind(){
   });
   $('#ocsv').onclick=indirOzet;
   $('#gmod').addEventListener('input',renderGrafik);
+  $('#paylas').onclick=async()=>{
+    const url=location.origin+'/'+bolumSlug(seciliBolum);
+    const b=$('#paylas');
+    if(navigator.share){ try{ await navigator.share({title:seciliBolum+' — 2026-YKS',url}); return }catch(e){} }
+    try{ await navigator.clipboard.writeText(url); }
+    catch(e){ prompt('Bağlantıyı kopyalayın:',url); return }
+    b.textContent='Kopyalandı ✓'; b.classList.add('ok');
+    setTimeout(()=>{b.textContent='Paylaş'; b.classList.remove('ok')},1800);
+  };
+  window.addEventListener('popstate',()=>{
+    const ad=yoldakiBolum();
+    if(ad){ bolumAc(ad,true) }
+    else { sekmeAc('grafik',$$('.tab').find(t=>t.dataset.tab==='grafik')); basligiGuncelle(null) }
+  });
   $('#osrcbtn').onclick=()=>{
     const acik=!$('#osrcrow').classList.contains('hidden');
     $('#osrcrow').classList.toggle('hidden',acik);
@@ -699,11 +761,12 @@ function bind(){
     render();bolumListe();renderOzet();aktifSekmeYenile()},220)});
 }
 function sekmeIsaretle(){
-  const kisayol={'Tıp':1,'Bilgisayar Mühendisliği':1};
-  const panelAcik=!$('#tab-bolum').classList.contains('hidden');
-  $$('.tab[data-bolum]').forEach(t=>t.classList.toggle('on',panelAcik&&t.dataset.bolum===seciliBolum));
-  $('#tabbsel').classList.toggle('on',panelAcik&&!kisayol[seciliBolum]);
-  $('#tabbsel').value = (panelAcik&&!kisayol[seciliBolum])?seciliBolum:'';
+  const panelAcik=!$('#tab-bolum').classList.contains('hidden'), sel=$('#tabbsel');
+  if(panelAcik && seciliBolum && ![...sel.options].some(o=>o.value===seciliBolum)){
+    sel.add(new Option(seciliBolum,seciliBolum));   // menüde olmayan bölüm (örn. grafikten gelindi)
+  }
+  sel.classList.toggle('on',panelAcik);
+  sel.value = panelAcik ? seciliBolum : '';
 }
 function sekmeAc(ad,el){
   $$('.tab').forEach(x=>x.classList.remove('on'));
@@ -711,6 +774,7 @@ function sekmeAc(ad,el){
   if(el)el.classList.add('on');
   ['grafik','ozet','bolum','all','uni','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
   sekmeIsaretle(); window.scrollTo({top:0}); aktifSekmeYenile();
+  if(ad!=='bolum'){ adresYaz(null); basligiGuncelle(null); }
   if(['all','bolum','uni'].includes(ad)) agirSekme(ad);
 }
 function aktifSekmeYenile(){
@@ -992,7 +1056,7 @@ function bolumListe(){
     {k:'tk',t:'Top. kont.',n:1},{k:'kod',t:'Kod'}],false);
 }
 /* Herhangi bir bölümü (seçici listesinde olmasa bile) panelde açar. */
-async function bolumAc(ad){
+async function bolumAc(ad,sessiz){
   if(!ad) return;
   const sel=$('#bsel');
   if(![...sel.options].some(o=>o.value===ad)){
@@ -1000,7 +1064,8 @@ async function bolumAc(ad){
     const opt=new Option(ad,ad); opt.dataset.gecici='1'; sel.add(opt);
   }
   seciliBolum=ad; sel.value=ad;
-  sekmeAc('bolum', $$('.tab').find(t=>t.dataset.bolum===ad)||null);
+  sekmeAc('bolum', null);
+  adresYaz(ad, sessiz); basligiGuncelle(ad);
 }
 
 /* ---------- GRAFİK GALERİSİ ---------- */

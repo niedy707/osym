@@ -30,10 +30,30 @@ def sehir(uni):
         if uni.startswith(il) or f' {il}' in uni: return il
     return ''
 
+def paransiz(pa):
+    """Program adindan parantezli tum ekleri atar.
+
+    Regex ile yapilamiyor: OSYM'nin bazi program adlarinda IC ICE parantez var
+    ("... (UOLP-New York Eyalet Universitesi (suny Albany)) (Ucretli)") ve
+    birinde acik parantez fazladan ("((uolp-..."). Duz bir regex bu adlarda
+    kapanis parantezini geride birakip 'Iktisat)' gibi hayalet bolumler
+    uretiyordu. Derinlik sayarak taramak ikisini de dogru ele aliyor.
+    """
+    out, derinlik = [], 0
+    for ch in pa:
+        if ch == '(':
+            derinlik += 1
+        elif ch == ')':
+            derinlik = max(0, derinlik - 1)
+        elif derinlik == 0:
+            out.append(ch)
+    return re.sub(r'\s{2,}', ' ', ''.join(out)).strip()
+
+
 def parse(pa):
     """Program adindan temel ad + nitelikleri cikar."""
     parens = re.findall(r'\(([^)]*)\)', pa)
-    base = re.sub(r'\s*\([^)]*\)', '', pa).strip()
+    base = paransiz(pa)
     low = pa.lower()
     if '%50' in pa: burs = '%50 İndirimli'
     elif '%25' in pa: burs = '%25 İndirimli'

@@ -11,6 +11,7 @@ KKTC anahtari iki ayri gorunum urettigi icin her iki varyant da hesaplanir.
 import json, os
 from rank_model import NTOT
 from bolumler import baraj as baraj_bul
+from slug import slug
 
 BANDLAR = [(1, 1000), (1000, 5000), (5000, 10000), (10000, 25000), (25000, 50000),
            (50000, 100000), (100000, 200000), (200000, 300000), (300000, 10**7)]
@@ -52,7 +53,7 @@ def varyant(rows):
         mins = [x['min'] for x in v if x['min'] is not None]
         sirs = [x['smin'] for x in v]
         out.append({
-            'ad': ad, 'pt': pt, 'prog': len(v), 'kont': kont, 'yer': yer,
+            'ad': ad, 'slug': slug(ad), 'pt': pt, 'prog': len(v), 'kont': kont, 'yer': yer,
             'acik': sum(x['acik'] for x in v), 'fazla': sum(x['fazla'] for x in v),
             'dilim': round(sum(x['yuzde'] * x['tk'] for x in v) / max(1, kont), 4),
             'dol': round(100 * yer / kont, 4) if kont else None,

@@ -1,6 +1,7 @@
 [
  {
   "base": "Tıp",
+  "slug": "tip",
   "ad": "Tıp Fakültesi",
   "pt": "SAY",
   "baraj": 50000,
@@ -10,6 +11,7 @@
  },
  {
   "base": "Hukuk",
+  "slug": "hukuk",
   "ad": "Hukuk Fakültesi",
   "pt": "EA",
   "baraj": 100000,
@@ -19,6 +21,7 @@
  },
  {
   "base": "Diş Hekimliği",
+  "slug": "dis-hekimligi",
   "ad": "Diş Hekimliği Fakültesi",
   "pt": "SAY",
   "baraj": 80000,
@@ -28,6 +31,7 @@
  },
  {
   "base": "İngiliz Dili ve Edebiyatı",
+  "slug": "ingiliz-dili-ve-edebiyati",
   "ad": "İngiliz Dili ve Edebiyatı",
   "pt": "DİL",
   "baraj": null,
@@ -37,6 +41,7 @@
  },
  {
   "base": "Okul Öncesi Öğretmenliği",
+  "slug": "okul-oncesi-ogretmenligi",
   "ad": "Okul Öncesi Öğretmenliği",
   "pt": "SÖZ",
   "baraj": 300000,
@@ -46,6 +51,7 @@
  },
  {
   "base": "İngilizce Öğretmenliği",
+  "slug": "ingilizce-ogretmenligi",
   "ad": "İngilizce Öğretmenliği",
   "pt": "DİL",
   "baraj": 300000,
@@ -55,6 +61,7 @@
  },
  {
   "base": "Özel Eğitim Öğretmenliği",
+  "slug": "ozel-egitim-ogretmenligi",
   "ad": "Özel Eğitim Öğretmenliği",
   "pt": "SÖZ",
   "baraj": 300000,
@@ -64,6 +71,7 @@
  },
  {
   "base": "İngilizce Mütercim ve Tercümanlık",
+  "slug": "ingilizce-mutercim-ve-tercumanlik",
   "ad": "İngilizce Mütercim ve Tercümanlık",
   "pt": "DİL",
   "baraj": null,
@@ -73,6 +81,7 @@
  },
  {
   "base": "Türkçe Öğretmenliği",
+  "slug": "turkce-ogretmenligi",
   "ad": "Türkçe Öğretmenliği",
   "pt": "SÖZ",
   "baraj": 300000,
@@ -82,6 +91,7 @@
  },
  {
   "base": "Eczacılık",
+  "slug": "eczacilik",
   "ad": "Eczacılık Fakültesi",
   "pt": "SAY",
   "baraj": 100000,
@@ -91,6 +101,7 @@
  },
  {
   "base": "Bilgisayar Mühendisliği",
+  "slug": "bilgisayar-muhendisligi",
   "ad": "Bilgisayar Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
@@ -100,6 +111,7 @@
  },
  {
   "base": "Elektrik-Elektronik Mühendisliği",
+  "slug": "elektrik-elektronik-muhendisligi",
   "ad": "Elektrik-Elektronik Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
@@ -109,6 +121,7 @@
  },
  {
   "base": "Makine Mühendisliği",
+  "slug": "makine-muhendisligi",
   "ad": "Makine Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
@@ -118,6 +131,7 @@
  },
  {
   "base": "Gastronomi ve Mutfak Sanatları",
+  "slug": "gastronomi-ve-mutfak-sanatlari",
   "ad": "Gastronomi ve Mutfak Sanatları",
   "pt": "SÖZ",
   "baraj": null,
@@ -127,6 +141,7 @@
  },
  {
   "base": "Turizm Rehberliği",
+  "slug": "turizm-rehberligi",
   "ad": "Turizm Rehberliği",
   "pt": "DİL",
   "baraj": null,
@@ -136,6 +151,7 @@
  },
  {
   "base": "Endüstri Mühendisliği",
+  "slug": "endustri-muhendisligi",
   "ad": "Endüstri Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
@@ -145,15 +161,17 @@
  },
  {
   "base": "İşletme",
+  "slug": "isletme",
   "ad": "İşletme",
   "pt": "EA",
   "baraj": null,
-  "kont": 12974,
+  "kont": 12994,
   "pay2000": 7.82,
   "pay50000": 1.52
  },
  {
   "base": "Psikoloji",
+  "slug": "psikoloji",
   "ad": "Psikoloji",
   "pt": "EA",
   "baraj": null,
@@ -163,15 +181,17 @@
  },
  {
   "base": "İktisat",
+  "slug": "iktisat",
   "ad": "İktisat",
   "pt": "EA",
   "baraj": null,
-  "kont": 8656,
+  "kont": 8671,
   "pay2000": 7.34,
   "pay50000": 1.19
  },
  {
   "base": "Yönetim Bilişim Sistemleri",
+  "slug": "yonetim-bilisim-sistemleri",
   "ad": "Yönetim Bilişim Sistemleri",
   "pt": "EA",
   "baraj": null,
@@ -181,6 +201,7 @@
  },
  {
   "base": "İlahiyat",
+  "slug": "ilahiyat",
   "ad": "İlahiyat Fakültesi",
   "pt": "SÖZ",
   "baraj": null,
@@ -190,6 +211,7 @@
  },
  {
   "base": "Tarih",
+  "slug": "tarih",
   "ad": "Tarih",
   "pt": "SÖZ",
   "baraj": null,
@@ -199,15 +221,17 @@
  },
  {
   "base": "Siyaset Bilimi ve Uluslararası İlişkiler",
+  "slug": "siyaset-bilimi-ve-uluslararasi-iliskiler",
   "ad": "Siyaset Bilimi ve Uluslararası İlişkiler",
   "pt": "EA",
   "baraj": null,
-  "kont": 3517,
+  "kont": 3532,
   "pay2000": 2.87,
   "pay50000": 0.59
  },
  {
   "base": "Türk Dili ve Edebiyatı",
+  "slug": "turk-dili-ve-edebiyati",
   "ad": "Türk Dili ve Edebiyatı",
   "pt": "SÖZ",
   "baraj": null,
@@ -217,6 +241,7 @@
  },
  {
   "base": "Elektronik ve Haberleşme Mühendisliği",
+  "slug": "elektronik-ve-haberlesme-muhendisligi",
   "ad": "Elektronik ve Haberleşme Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
@@ -226,6 +251,7 @@
  },
  {
   "base": "Uçak Mühendisliği",
+  "slug": "ucak-muhendisligi",
   "ad": "Uçak Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
@@ -235,6 +261,7 @@
  },
  {
   "base": "Uluslararası İlişkiler",
+  "slug": "uluslararasi-iliskiler",
   "ad": "Uluslararası İlişkiler",
   "pt": "EA",
   "baraj": null,
@@ -244,6 +271,7 @@
  },
  {
   "base": "Ekonomi",
+  "slug": "ekonomi",
   "ad": "Ekonomi",
   "pt": "EA",
   "baraj": null,
@@ -253,6 +281,7 @@
  },
  {
   "base": "Çeviribilimi",
+  "slug": "ceviribilimi",
   "ad": "Çeviribilimi",
   "pt": "DİL",
   "baraj": null,

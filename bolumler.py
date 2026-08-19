@@ -7,6 +7,7 @@ Kural (kullanici karari): iki listenin BIRLESIMI
 A "zirvede revacta", B "kitlesel revacta" bolumleri yakalar.
 """
 import json, collections
+from slug import slug
 
 # OSYM 2026-YKS Tercih Kilavuzu, basari sirasi barajlari (resmi)
 BARAJ_TAM = {'Tıp': 50000, 'Diş Hekimliği': 80000, 'Eczacılık': 100000, 'Hukuk': 100000,
@@ -50,6 +51,7 @@ def uret(rows, esik=0.01):
     for k in sorted(secilen):          # set uzerinde dolasmak sirayi belirsiz birakiyordu
         out.append({
             'base': k,
+            'slug': slug(k),
             'ad': GORUNEN.get(k, k),
             'pt': max(ptc[k], key=ptc[k].get),
             'baraj': baraj(k),

@@ -19,6 +19,11 @@ class H(SimpleHTTPRequestHandler):
         if path == '/':
             path = '/index.html'
         fp = os.path.normpath(os.path.join(ROOT, path.lstrip('/')))
+        # Paylasilabilir bolum adresleri (/hemsirelik): uzantisiz ve dosyaya
+        # karsilik gelmeyen yollar index.html'e duser. Vercel'deki rewrite
+        # kuralinin yerel karsiligi; yonlendirme index.html icinde cozuluyor.
+        if not os.path.isfile(fp) and '.' not in os.path.basename(path):
+            fp = os.path.join(ROOT, 'index.html')
         if not fp.startswith(ROOT) or not os.path.isfile(fp):
             self.send_error(404, "Bulunamadi")
             return
