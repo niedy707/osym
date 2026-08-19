@@ -97,10 +97,10 @@ yapmadan** test eder:
 Üç bağımsız gerekçe:
 
 1. **Türkiye'nin tüm Tıp kontenjanı 19.044.** İlk 25 binden 20 bin kişi Tıp kazansaydı, ülkedeki
-   tüm Tıp kadrolarının %105'i tek başına ilk 25 binden dolardı. Oysa 26.000–49.000 bandında
-   **4.483 kontenjan** dolu durumda.
+   tüm Tıp kadrolarının %105'i tek başına ilk 25 binden dolardı. Oysa 20.000–50.000 sıralama bandında
+   **4.483 Tıp kontenjanı** dolu durumda.
 2. **Üst sınır bile 18.436** — iddia edilen 20.000'in altında.
-3. Tıp'a yerleşenlerin **3.185'i (%17)** zaten 25.000'in gerisinde.
+3. Tıp'a yerleşenlerin **3.186'sı (%17)** zaten 25.000'in gerisinde.
 
 Doğrusu: *ilk 25 binin yaklaşık üçte ikisi (%63–74) tıp kazandı.* Hâlâ çarpıcı, ama %80 değil.
 
@@ -160,6 +160,12 @@ bazında pozitif boşlukların toplamı) · `fazla` (eşit puan nedeniyle konten
 `kktc`/`kktc_uni`/`uolp`/`uzaktan`/`io`/`aof` bayrakları
 
 ---
+
+## Canlı sürüm
+
+- **Uygulama:** https://osym-tau.vercel.app
+- **Ayna (GitHub Pages):** https://niedy707.github.io/OSYM/
+- **Paylaşım görseli:** [`tip-25k.png`](tip-25k.png) — `paylas.html` dosyasından üretilir
 
 ## Lisans ve sorumluluk reddi
 

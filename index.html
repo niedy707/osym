@@ -63,7 +63,8 @@ td.uni{white-space:normal;min-width:210px}
 .note b{color:var(--fg)}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:13px;margin-bottom:13px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:13px}
-.card h3{margin:0 0 10px;font-size:13px;font-weight:650}
+.card h3{margin:0 0 10px;font-size:13px;font-weight:650;letter-spacing:.2px}
+.src{margin-top:9px;padding-top:8px;border-top:1px solid var(--line);color:var(--dim);font-size:10.5px;letter-spacing:.2px}
 .bar{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:11.5px}
 .bar .lbl{width:118px;color:var(--dim);text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
 .bar .track{flex:1;background:var(--panel2);border-radius:3px;height:15px;overflow:hidden}
@@ -156,7 +157,7 @@ a{color:var(--accent)}
   </div>
   <div class="stats" id="tipstats"></div>
   <div class="card" style="margin-bottom:13px">
-    <h3>Kontenjan / kota doluluğu <span style="font-weight:400;color:var(--dim)">— ÖSYM Tıp başarı sırası barajı: 50.000</span></h3>
+    <h3>🩺 TIP FAKÜLTESİ — kontenjan / kota doluluğu <span style="font-weight:400;color:var(--dim)">— ÖSYM Tıp başarı sırası barajı: 50.000</span></h3>
     <div class="kota">
       <span class="kotalbl">Kontenjan doluluğu</span>
       <div class="kotabar"><div class="kotafill" id="kbar1"></div></div>
@@ -170,15 +171,15 @@ a{color:var(--accent)}
     <div class="kotalbl" id="kson" style="margin-top:8px"></div>
   </div>
   <div class="card" style="margin-bottom:13px">
-    <h3>Açık kalan Tıp kadroları <span style="font-weight:400;color:var(--dim)">— çoktan aza</span>
+    <h3>🩺 TIP FAKÜLTESİ — açık kalan kadrolar <span style="font-weight:400;color:var(--dim)">— çoktan aza</span>
       <button id="acsv" style="float:right;font-size:11.5px;padding:3px 9px">CSV</button></h3>
     <div class="tblwrap" style="max-height:300px"><table id="atbl"><thead></thead><tbody></tbody></table></div>
   </div>
   <div class="grid2">
-    <div class="card"><h3>Taban puan aralığına göre kontenjan dağılımı</h3><div id="tiphist"></div></div>
-    <div class="card"><h3>Tahmini sıralama bandına göre kontenjan</h3><div id="tipband"></div></div>
-    <div class="card"><h3>Üniversite türüne göre</h3><div id="tiptur"></div></div>
-    <div class="card"><h3>Burs durumuna göre</h3><div id="tipburs"></div></div>
+    <div class="card"><h3>🩺 TIP FAKÜLTESİ — taban puan aralığına göre kontenjan</h3><div id="tiphist"></div><div class="src">2026-YKS · ÖSYM resmî TABLO-4 · <span id="src1"></span></div></div>
+    <div class="card"><h3>🩺 TIP FAKÜLTESİ — tahmini sıralama bandına göre kontenjan</h3><div id="tipband"></div><div class="src">2026-YKS · ÖSYM resmî TABLO-4 · sıralamalar tahmindir · <span id="src2"></span></div></div>
+    <div class="card"><h3>🩺 TIP FAKÜLTESİ — üniversite türüne göre kontenjan</h3><div id="tiptur"></div><div class="src">2026-YKS · ÖSYM resmî TABLO-4 · <span id="src3"></span></div></div>
+    <div class="card"><h3>🩺 TIP FAKÜLTESİ — burs durumuna göre kontenjan</h3><div id="tipburs"></div><div class="src">2026-YKS · ÖSYM resmî TABLO-4 · <span id="src4"></span></div></div>
   </div>
   <div class="filters"><div class="frow">
     <div class="f"><label>Tıp programlarında ara</label><input class="srch" id="tq" placeholder="üniversite veya şehir"></div>
@@ -534,6 +535,8 @@ function initTip(){
   const by = key => { const m={}; T.forEach(d => m[d[key]] = (m[d[key]]||0)+d.tk);
     return Object.entries(m).sort((a,b)=>b[1]-a[1]); };
   barChart($('#tiptur'), by('unituru'));
+  const srcTxt = (kktcMode==='in' ? 'KKTC dahil' : 'KKTC hariç') + ' · osym-tau.vercel.app';
+  ['#src1','#src2','#src3','#src4'].forEach(id => { const e=$(id); if(e) e.textContent = srcTxt; });
   barChart($('#tipburs'), by('burs'));
 
   const TC = [
