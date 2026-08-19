@@ -30,9 +30,11 @@ jobs:
         run: python3 rank_model.py
 
       - name: Veriyi sıfırdan üret
+        # PYTHONHASHSEED rastgele: çıktı gerçekten belirlenimci mi, her koşuda sınanır.
         run: |
           python3 build_data.py
           python3 bolumler.py
+          python3 ozet.py
 
       - name: Depodaki veri, yeniden üretimle birebir aynı mı?
         # Kaynak dosyalar aynıysa çıktı da aynı olmalı. Fark varsa ya veri elle

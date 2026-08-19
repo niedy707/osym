@@ -62,7 +62,7 @@ def varyant(rows):
             'baraj': baraj_bul(ad),
             'bandlar': bandla(v, baraj_bul(ad)),
         })
-    out.sort(key=lambda o: o['dilim'])
+    out.sort(key=lambda o: (o['dilim'], o['ad']))   # esit dilimde ad ile sabitle
     return out
 
 

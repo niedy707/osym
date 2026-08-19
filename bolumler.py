@@ -47,7 +47,7 @@ def uret(rows, esik=0.01):
         top[r['base']] += r['tk']
 
     out = []
-    for k in secilen:
+    for k in sorted(secilen):          # set uzerinde dolasmak sirayi belirsiz birakiyordu
         out.append({
             'base': k,
             'ad': GORUNEN.get(k, k),
@@ -57,8 +57,9 @@ def uret(rows, esik=0.01):
             'pay2000': round(100 * c2.get(k, 0) / t2, 2),
             'pay50000': round(100 * c50.get(k, 0) / t50, 2),
         })
-    # ilk 50.000 payina gore sirala, Tip her zaman basta (varsayilan secim)
-    out.sort(key=lambda x: (x['base'] != 'Tıp', -x['pay50000'], -x['pay2000']))
+    # ilk 50.000 payina gore sirala, Tip her zaman basta (varsayilan secim).
+    # Son anahtar ad: esit paylarda siranin calistirmadan calistirmaya degismemesi icin.
+    out.sort(key=lambda x: (x['base'] != 'Tıp', -x['pay50000'], -x['pay2000'], x['base']))
     return out
 
 if __name__ == '__main__':
