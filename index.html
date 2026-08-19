@@ -147,6 +147,7 @@ th .ar{color:var(--accent);margin-left:3px}
 .gcard{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:13px}
 .gcard h3{margin:0 0 3px;font-size:12.5px;font-weight:650;line-height:1.4}
 .gcard h3 .who{color:#ff8f8f;font-weight:750;letter-spacing:.3px}
+.gcard h3 .badge,.card h3 .badge{margin-left:7px;vertical-align:2px}
 .gcard .gsub{color:var(--dim);font-size:11px;margin-bottom:10px;line-height:1.5}
 .gcard .gsub b{color:var(--fg);font-weight:650}
 .tbar{display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap}
@@ -170,8 +171,26 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 .r1 .num{flex:0 0 auto;font-size:12px;font-variant-numeric:tabular-nums;text-align:right;color:var(--dim)}
 .r1 .num b{color:var(--fg);font-weight:650}
 .r1 .w1{width:52px}.r1 .w2{width:50px}.r1 .w3{width:58px}
+/* birleşik bölüm özeti satırı: # · ad · dilim · program · kontenjan · doluluk · iyi-dip sıra */
+.r1 .rk,.r1h .rk{flex:0 0 auto;width:20px;text-align:center;font-size:10.5px;font-weight:700;color:var(--dim)}
+.r1 .rk.top{color:var(--accent2)}
+.r1 .c1{width:42px}.r1 .c2{width:32px}.r1 .c3{width:40px}.r1 .c4{width:46px}.r1 .c5{width:70px}
+.r1h .c1{width:42px}.r1h .c2{width:32px}.r1h .c3{width:40px}.r1h .c4{width:46px}.r1h .c5{width:70px}
+.r1 .sep{color:var(--dim);margin:0 1px}
+@media (max-width:420px){
+  .r1,.r1h{gap:5px;padding-left:9px;padding-right:9px}
+  .r1 .num,.r1h .num{font-size:10.5px}
+  .r1 .ad{font-size:12px}
+  .r1 .c1{width:38px}.r1 .c2{width:26px}.r1 .c3{width:34px}.r1 .c4{width:40px}.r1 .c5{width:60px}
+  .r1h .c1{width:38px}.r1h .c2{width:26px}.r1h .c3{width:34px}.r1h .c4{width:40px}.r1h .c5{width:60px}
+}
+@media (min-width:768px){
+  .r1 .c1{width:70px}.r1 .c2{width:60px}.r1 .c3{width:80px}.r1 .c4{width:80px}.r1 .c5{width:130px}
+  .r1h .c1{width:70px}.r1h .c2{width:60px}.r1h .c3{width:80px}.r1h .c4{width:80px}.r1h .c5{width:130px}
+  .r1 .rk,.r1h .rk{width:30px}
+}
 .r1 .ok{color:var(--dim);flex:0 0 auto;font-size:11px}
-.r1h{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);
+.r1h{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--panel2);white-space:nowrap;
   border-bottom:1px solid var(--line);color:var(--dim);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
 .r1h .ad{flex:1;min-width:0}
 .r1h .num{flex:0 0 auto;text-align:right}
@@ -254,9 +273,8 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
     <div class="sub">ÖSYM resmî TABLO-3 &amp; TABLO-4 (18.08.2026) · 21.493 program</div>
   </div>
   <div class="tabs">
-    <div class="tab on" data-tab="tumbolum">Tüm Bölümler</div>
+    <div class="tab on" data-tab="grafik">Grafikler</div>
     <div class="tab" data-tab="ozet">Bölüm Özeti</div>
-    <div class="tab" data-tab="grafik">Grafikler</div>
     <div class="tab" data-tab="bolum" data-bolum="Tıp">Tıp</div>
     <div class="tab" data-tab="bolum" data-bolum="Bilgisayar Mühendisliği">Bilgisayar Müh.</div>
     <select class="tabsel" id="tabbsel" aria-label="Diğer bölümler"></select>
@@ -275,30 +293,39 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 
 <!-- ============ ÖZET ============ -->
 <section id="tab-ozet" class="hidden">
-  <div class="note"><b>En rekabetçi bölümler.</b> Sıralama ölçütü, her bölümün kontenjan-ağırlıklı
-    ortalama <b>yüzdelik dilimi</b>dir: bir programa yerleşenlerin, <b>kendi puan türü içinde</b>
-    en iyi yüzde kaçlık dilimde olduğu. Ham sıra kullanılamaz — SAY'da 1.135.718 aday varken
-    DİL'de yalnızca 132.826 aday var, bu yüzden "DİL'de 15.000. sıra" ile "SAY'da 15.000. sıra"
-    aynı başarı değildir. Yüzdelik dilim bu farkı ortadan kaldırır ve bölümleri kıyaslanabilir yapar.</div>
+  <div class="note"><b>Bölümler, rekabetçiliğe göre.</b> Ölçüt, kontenjan-ağırlıklı ortalama
+    <b>yüzdelik dilim</b>: bir programa yerleşenlerin <b>kendi puan türü içinde</b> en iyi yüzde
+    kaçlık dilimde olduğu (küçük = daha rekabetçi). Ham sıra kullanılamaz — SAY'da 1.135.718 aday
+    varken DİL'de yalnızca 132.826 aday var. Satıra dokununca puan ve kontenjan ayrıntısı açılır.</div>
   <div class="stats" id="ostats"></div>
-  <div class="filters"><div class="frow">
-    <div class="f"><label>Min. toplam kontenjan</label><select id="okont">
-      <option value="200">200</option><option value="500" selected>500</option>
-      <option value="1000">1.000</option><option value="2000">2.000</option><option value="0">sınır yok</option></select></div>
-    <div class="f"><label>Puan türü</label><select id="opt"><option value="">Hepsi</option>
-      <option>SAY</option><option>EA</option><option>SÖZ</option><option>DİL</option></select></div>
-    <div class="f"><label>Sırala</label><select id="osort">
-      <option value="dilim">Rekabetçilik (yüzdelik dilim)</option>
-      <option value="kont">Toplam kontenjan (çok→az)</option>
-      <option value="enIyiPuan">En yüksek puanı (yüksek→düşük)</option>
-      <option value="enDusukPuan">En düşük puanı (yüksek→düşük)</option>
-    </select></div>
-    <div class="f"><label>Kaç bölüm</label><select id="olimit">
-      <option value="25">25</option><option value="50" selected>50</option>
-      <option value="100">100</option><option value="9999">hepsi</option></select></div>
-    <div class="f wide"><label>Bölüm ara</label><input id="oq" placeholder="örn: mühendislik, öğretmenlik"></div>
-    <div class="f"><label>&nbsp;</label><button class="pri" id="ocsv">CSV indir</button></div>
-  </div></div>
+  <div class="tbar">
+    <div class="tbinfo" id="obinfo"></div>
+    <select id="osort" class="mini" aria-label="Sıralama ölçütü">
+      <option value="dilim">rekabetçilik</option>
+      <option value="kont">kontenjan (çok→az)</option>
+      <option value="enIyiPuan">en yüksek puan</option>
+      <option value="enDusukPuan">en düşük puan</option>
+    </select>
+    <select id="okont" class="mini" aria-label="Minimum kontenjan">
+      <option value="0">kontenjan: hepsi</option><option value="200">min 200</option>
+      <option value="500" selected>min 500</option><option value="1000">min 1.000</option>
+    </select>
+    <select id="opt" class="mini" aria-label="Puan türü"><option value="">tüm puan türleri</option>
+      <option>SAY</option><option>EA</option><option>SÖZ</option><option>DİL</option></select>
+    <select id="olimit" class="mini" aria-label="Kaç bölüm">
+      <option value="25">25 bölüm</option><option value="50" selected>50 bölüm</option>
+      <option value="100">100 bölüm</option><option value="9999">hepsi</option></select>
+    <button class="iconbtn" id="osrcbtn" title="Bölüm ara" aria-label="Bölüm ara">
+      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.8 12.8L17 17" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
+    </button>
+    <button class="iconbtn" id="ocsv" title="CSV indir" aria-label="CSV indir">
+      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M10 3v9m0 0l-3.4-3.4M10 12l3.4-3.4M4 15.5h12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  <div class="srcrow hidden" id="osrcrow">
+    <input id="oq" placeholder="bölüm ara — örn: tıp, mühendislik, öğretmenlik" autocomplete="off">
+    <button class="iconbtn" id="osrcclose" title="Kapat" aria-label="Aramayı kapat">✕</button>
+  </div>
   <div id="olist"></div>
   <div class="foot" id="ofoot"></div>
 </section>
@@ -319,7 +346,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <!-- 1) infografik -->
   <div class="stats" id="bstats"></div>
   <div class="card" id="kotacard">
-    <h3><span class="who" id="kt1"></span> — kontenjan / kota doluluğu</h3>
+    <h3><span class="who" id="kt1"></span><span class="badge pt" id="pt1"></span></h3>
     <div class="csub" id="kotasub"></div>
     <div class="kota"><span class="kotalbl">Kontenjan doluluğu</span>
       <div class="kotabar"><div class="kotafill" id="kbar1"></div></div></div>
@@ -331,14 +358,14 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   </div>
   <!-- 2) sütun grafikler -->
   <div class="grid2">
-    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt2"></span> — taban puan aralığına göre kontenjan</h3>
-      <div class="csub" id="cs2"></div><div id="hist"></div><div class="src" id="sr2"></div></div>
-    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt3"></span> — tahmini sıralama bandına göre kontenjan</h3>
-      <div class="csub" id="cs3"></div><div id="band"></div><div class="src" id="sr3"></div></div>
-    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt4"></span> — üniversite türüne göre kontenjan</h3>
-      <div class="csub" id="cs4"></div><div id="tur"></div><div class="src" id="sr4"></div></div>
-    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt5"></span> — burs durumuna göre kontenjan</h3>
-      <div class="csub" id="cs5"></div><div id="burs"></div><div class="src" id="sr5"></div></div>
+    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt2"></span><span class="badge pt" id="pt2"></span></h3>
+      <div class="csub"><b>taban puan aralığına göre kontenjan</b> · <span id="cs2"></span></div><div id="hist"></div><div class="src" id="sr2"></div></div>
+    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt3"></span><span class="badge pt" id="pt3"></span></h3>
+      <div class="csub"><b>tahmini sıralama bandına göre kontenjan</b> · <span id="cs3"></span></div><div id="band"></div><div class="src" id="sr3"></div></div>
+    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt4"></span><span class="badge pt" id="pt4"></span></h3>
+      <div class="csub"><b>üniversite türüne göre kontenjan</b> · <span id="cs4"></span></div><div id="tur"></div><div class="src" id="sr4"></div></div>
+    <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt5"></span><span class="badge pt" id="pt5"></span></h3>
+      <div class="csub"><b>burs durumuna göre kontenjan</b> · <span id="cs5"></span></div><div id="burs"></div><div class="src" id="sr5"></div></div>
   </div>
   <!-- 3) tablolar / liste -->
   <div class="filters"><div class="frow">
@@ -399,27 +426,6 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
   <div id="ulist"></div>
 </section>
 
-<!-- ============ TÜM BÖLÜMLER ============ -->
-<section id="tab-tumbolum" class="hidden">
-  <div class="tbar">
-    <div class="tbinfo" id="tbinfo"></div>
-    <select id="tduzey" class="mini" aria-label="Düzey"><option value="">Tüm düzeyler</option><option>Lisans</option><option>Ön Lisans</option></select>
-    <select id="tkmin" class="mini" aria-label="Minimum kontenjan">
-      <option value="0">kontenjan: hepsi</option><option value="50" selected>min 50</option>
-      <option value="200">min 200</option><option value="500">min 500</option><option value="1000">min 1.000</option></select>
-    <button class="iconbtn" id="tsrcbtn" title="Bölüm ara" aria-label="Bölüm ara">
-      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M12.8 12.8L17 17" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>
-    </button>
-    <button class="iconbtn" id="tcsv" title="CSV indir" aria-label="CSV indir">
-      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true"><path d="M10 3v9m0 0l-3.4-3.4M10 12l3.4-3.4M4 15.5h12" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </button>
-  </div>
-  <div class="srcrow hidden" id="tsrcrow">
-    <input id="tq" placeholder="bölüm ara — örn: tıp, hukuk, psikoloji" autocomplete="off">
-    <button class="iconbtn" id="tsrcclose" title="Kapat" aria-label="Aramayı kapat">✕</button>
-  </div>
-  <div id="tlist"></div>
-</section>
 
 <!-- ============ YÖNTEM ============ -->
 <section id="tab-info" class="hidden">
@@ -517,7 +523,7 @@ Promise.all([fetch('data/programlar.json').then(r=>r.json()),
              fetch('data/bolumler.json').then(r=>r.json())]).then(([p,b])=>{
   ALL=p;BOLUMLER=b;applyKKTC();
   $('#loading').classList.add('hidden');
-  $('#tab-tumbolum').classList.remove('hidden');
+  $('#tab-grafik').classList.remove('hidden');
   init();
 });
 
@@ -543,7 +549,7 @@ function init(){
     [...new Set(ALL.filter(d=>d.duzey==='Lisans').map(d=>d[k]))].filter(Boolean)
       .sort((a,b)=>a.localeCompare(b,'tr')).forEach(v=>sel.add(new Option(v,v)));
   });
-  bind(); apply(); bolumPanel(); renderOzet(); renderTumBolum(); aktifSekmeYenile();
+  bind(); apply(); bolumPanel(); renderOzet(); renderGrafik(); aktifSekmeYenile();
 }
 function bind(){
   ['#q','#fduzey','#fpt','#funi','#fsehir','#fburs','#fdil','#pmin','#pmax','#smin','#smax','#kmin','#psize']
@@ -577,22 +583,20 @@ function bind(){
   $('#bcsv').onclick=()=>indirProgram(bolumRows(),`2026-yks-${norm(seciliBolum).replace(/\s+/g,'-')}.csv`);
   ['#okont','#opt','#olimit','#oq','#osort'].forEach(s=>$(s).addEventListener('input',renderOzet));
   $('#ocsv').onclick=indirOzet;
+  $('#osrcbtn').onclick=()=>{
+    const acik=!$('#osrcrow').classList.contains('hidden');
+    $('#osrcrow').classList.toggle('hidden',acik);
+    $('#osrcbtn').classList.toggle('on',!acik);
+    if(!acik) $('#oq').focus();
+  };
+  $('#osrcclose').onclick=()=>{
+    $('#oq').value=''; $('#osrcrow').classList.add('hidden');
+    $('#osrcbtn').classList.remove('on'); renderOzet();
+  };
   ['#uq','#uduzey'].forEach(s=>$(s).addEventListener('input',renderUni));
-  ['#tq','#tduzey','#tkmin'].forEach(s=>$(s).addEventListener('input',renderTumBolum));
-  $('#tsrcbtn').onclick=()=>{
-    const acik=!$('#tsrcrow').classList.contains('hidden');
-    $('#tsrcrow').classList.toggle('hidden',acik);
-    $('#tsrcbtn').classList.toggle('on',!acik);
-    if(!acik) $('#tq').focus();
-  };
-  $('#tsrcclose').onclick=()=>{
-    $('#tq').value=''; $('#tsrcrow').classList.add('hidden');
-    $('#tsrcbtn').classList.remove('on'); renderTumBolum();
-  };
   $('#ovl').onclick=e=>{ if(e.target===$('#ovl')) kapatSheet() };
   document.addEventListener('keydown',e=>{ if(e.key==='Escape') kapatSheet() });
-  $('#ucsv').onclick=()=>indirAgg('uni');
-  $('#tcsv').onclick=()=>indirAgg('bolum');
+  $('#ucsv').onclick=indirAgg;
   let t0;window.addEventListener('resize',()=>{clearTimeout(t0);t0=setTimeout(()=>{
     render();bolumListe();renderOzet();aktifSekmeYenile()},220)});
 }
@@ -607,15 +611,14 @@ function sekmeAc(ad,el){
   $$('.tab').forEach(x=>x.classList.remove('on'));
   $('#tabbsel').classList.remove('on');
   if(el)el.classList.add('on');
-  ['tumbolum','ozet','grafik','bolum','all','uni','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
+  ['grafik','ozet','bolum','all','uni','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
   sekmeIsaretle(); window.scrollTo({top:0}); aktifSekmeYenile();
 }
 function aktifSekmeYenile(){
-  const cur=['tumbolum','ozet','grafik','bolum','all','uni','info']
-    .find(n=>!$('#tab-'+n).classList.contains('hidden'))||'tumbolum';
+  const cur=['grafik','ozet','bolum','all','uni','info']
+    .find(n=>!$('#tab-'+n).classList.contains('hidden'))||'grafik';
   if(cur==='grafik')renderGrafik();
   if(cur==='uni')renderUni();
-  if(cur==='tumbolum')renderTumBolum();
   $('#kktcinfo').textContent=kktcMode==='out'
     ?'KKTC üniversiteleri ve "KKTC Uyruklu" kontenjanları hariç':'tüm programlar dahil';
 }
@@ -668,10 +671,10 @@ function ozetHesap(minKont){
   return {hepsi, gecen:hepsi.filter(o=>o.kont>=minKont), elenen:hepsi.filter(o=>o.kont<minKont)};
 }
 const OSORT={
-  dilim:{ad:'rekabetçiliğe (ortalama yüzdelik dilim, küçük daha rekabetçi)',f:(a,b)=>a.dilim-b.dilim},
-  kont:{ad:'toplam kontenjana',f:(a,b)=>b.kont-a.kont},
-  enIyiPuan:{ad:'bölümün en yüksek taban puanına',f:(a,b)=>b.enIyiPuan-a.enIyiPuan},
-  enDusukPuan:{ad:'bölümün en düşük taban puanına',f:(a,b)=>b.enDusukPuan-a.enDusukPuan},
+  dilim:{ad:'rekabetçiliğe (ortalama yüzdelik dilim, küçük daha rekabetçi)',kisa:'rekabetçiliğe göre',f:(a,b)=>a.dilim-b.dilim},
+  kont:{ad:'toplam kontenjana',kisa:'kontenjana göre',f:(a,b)=>b.kont-a.kont},
+  enIyiPuan:{ad:'bölümün en yüksek taban puanına',kisa:'en yüksek puana göre',f:(a,b)=>b.enIyiPuan-a.enIyiPuan},
+  enDusukPuan:{ad:'bölümün en düşük taban puanına',kisa:'en düşük puana göre',f:(a,b)=>b.enDusukPuan-a.enDusukPuan},
 };
 function ozetRows(){
   const mk=+$('#okont').value, pt=$('#opt').value, lim=+$('#olimit').value, q=norm($('#oq').value);
@@ -680,61 +683,50 @@ function ozetRows(){
   return gecen.filter(o=>(!pt||o.pt===pt)&&(!q||norm(o.ad).includes(q)))
     .slice().sort(OSORT[sk].f).slice(0,lim);
 }
+let OB=[];
 function renderOzet(){
-  const mk=+$('#okont').value, lim=+$('#olimit').value;
+  const mk=+$('#okont').value;
   const {gecen,elenen}=ozetHesap(mk);
-  const R=ozetRows();
-  const tk=gecen.reduce((s,o)=>s+o.kont,0), ty=gecen.reduce((s,o)=>s+o.yer,0);
-  $('#ostats').innerHTML=[['Bölüm (listede)',fmt(R.length)],['Eşiği geçen bölüm',fmt(gecen.length)],
-    ['Toplam kontenjan',fmt(tk)],['Yerleşen',fmt(ty)],['Doluluk',pct(ty,tk)],
-    ['En rekabetçi',R.length?R[0].ad:'—']]
+  OB=ozetRows();
+  const tk=gecen.reduce((s2,o)=>s2+o.kont,0), ty=gecen.reduce((s2,o)=>s2+o.yer,0);
+  $('#ostats').innerHTML=[['Listelenen bölüm',fmt(OB.length)],['Eşiği geçen',fmt(gecen.length)],
+    ['Toplam kontenjan',fmt(tk)],['Yerleşen',fmt(ty)],['Doluluk',dolKisa(tk?100*ty/tk:null)],
+    [$('#osort').value==='dilim'?'En rekabetçi':'İlk sırada',OB.length?OB[0].ad:'—']]
     .map(([a,b])=>`<div class="stat"><div class="k">${a}</div><div class="v${String(b).length>9?' sm':''}">${b}</div></div>`).join('');
-  const ix=o=>R.indexOf(o)+1;
-  $('#olist').innerHTML = mobil()
-    ? '<div class="cards">'+R.map((o,i)=>`<div class="pc">
-        <div class="u"><span class="rank ${i<3?'top':''}">${i+1}</span>${o.ad}<span class="badge pt">${o.pt}</span></div>
-        <div class="m">${fmt(o.prog)} program · en iyi taban ${fmtP(o.enIyiPuan)} (${fmt(o.enIyiSira)}. sıra)</div>
-        <div class="g">
-          <div><div class="k">Dilim</div><div class="v">${fmtY(o.dilim)}</div></div>
-          <div><div class="k">Kontenjan</div><div class="v">${fmt(o.kont)}</div></div>
-          <div><div class="k">Doluluk</div><div class="v">${dolKisa(o.dol)}</div></div>
-          <div><div class="k">En dip sıra</div><div class="v">${fmt(o.enDipSira)}</div></div>
-        </div></div>`).join('')+'</div>'
-    : tablo(R,[
-      {k:'ad',t:'#',n:1,r:o=>`<span class="rank ${ix(o)<=3?'top':''}">${ix(o)}</span>`},
-      {k:'ad',t:'Bölüm',cls:'uni'},
-      {k:'pt',t:'Puan türü',r:o=>`<span class="badge pt">${o.pt}</span>`},
-      {k:'dilim',t:'Ort. yüzdelik dilim',n:1,r:o=>`<b>${fmtY(o.dilim)}</b>`},
-      {k:'prog',t:'Program',n:1,r:o=>fmt(o.prog)},
-      {k:'kont',t:'Kontenjan',n:1,r:o=>fmt(o.kont)},
-      {k:'yer',t:'Yerleşen',n:1,r:o=>fmt(o.yer)},
-      {k:'acik',t:'Açık kadro',n:1,r:o=>o.acik>0?`<span class="warn">${fmt(o.acik)}</span>`:'0'},
-      {k:'dol',t:'Doluluk',n:1,r:o=>o.dol==null?'—':'%'+o.dol.toFixed(2).replace('.',',')},
-      {k:'enIyiSira',t:'En iyi sıra ≈',n:1,r:o=>fmt(o.enIyiSira)},
-      {k:'enDipSira',t:'En dip sıra ≈',n:1,r:o=>fmt(o.enDipSira)},
-      {k:'enIyiPuan',t:'En yüksek taban',n:1,r:o=>fmtP(o.enIyiPuan)},
-      {k:'enDusukPuan',t:'En düşük taban',n:1,r:o=>fmtP(o.enDusukPuan)}],false);
-  // dipnot: kucuk kontenjani yuzunden elenen ama rekabetci bolumler
-  const dip=elenen.filter(o=>o.dilim<= (gecen[Math.min(gecen.length-1,49)]?.dilim ?? 100))
-    .slice(0,22).map(o=>`${o.ad} (${fmt(o.kont)})`);
+  $('#obinfo').textContent=`${fmt(OB.length)} bölüm · ${OSORT[$('#osort').value||'dilim'].kisa}`;
+
+  // Ana listede: # · Bölüm · Dilim · Program · Kontenjan · Doluluk · En iyi–en dip sıra
+  // Puan türü, yerleşen, açık kadro ve taban puanlar satıra sığmadığı için pop-up'ta.
+  $('#olist').innerHTML = OB.length ? `<div class="rows1">
+    <div class="r1h"><span class="rk">#</span><span class="ad">Bölüm</span>
+      <span class="num c1">Dilim</span><span class="num c2">Prog</span><span class="num c3">Kont</span>
+      <span class="num c4">Doluluk</span><span class="num c5">Sıra</span></div>
+    ${OB.map((o,i)=>`<div class="r1" data-i="${i}">
+      <span class="rk ${i<3?'top':''}">${i+1}</span>
+      <span class="ad">${o.ad}</span>
+      <span class="num c1"><b>${fmtY(o.dilim)}</b></span>
+      <span class="num c2">${fmt(o.prog)}</span>
+      <span class="num c3"><b>${kisaSayi(o.kont)}</b></span>
+      <span class="num c4"><b>${dolKisa(o.dol)}</b></span>
+      <span class="num c5">${kisaSayi(o.enIyiSira)}<span class="sep">–</span>${kisaSayi(o.enDipSira)}</span>
+    </div>`).join('')}</div>`
+    : `<div class="card" style="color:var(--dim)">Eşleşen bölüm yok.</div>`;
+  $$('#olist .r1').forEach(el=>el.onclick=()=>acSheet(OB[+el.dataset.i]));
+
+  const dip=elenen.filter(o=>o.dilim<=(gecen[Math.min(gecen.length-1,49)]?.dilim ?? 100))
+    .slice(0,20).map(o=>`${o.ad} (${fmt(o.kont)})`);
   $('#ofoot').innerHTML=`<b style="color:var(--fg)">Sıralama ölçütü:</b>
     ${OSORT[$('#osort').value||'dilim'].ad} göre.
-    <br><br><b style="color:var(--fg)">Dipnot.</b> Toplam kontenjanı
-    <b style="color:var(--fg)">${fmt(mk)}</b>'in altındaki ${fmt(elenen.length)} bölüm listeye alınmadı;
-    çok küçük kontenjanlı programlar tek bir öğrenciyle sıralamayı yanıltıcı biçimde yukarı çekiyor.
-    Eşik olmasaydı listeye girecek olanlardan bazıları (parantez içinde kontenjanları):
-    ${dip.join(' · ')||'yok'}. Eşiği yukarıdaki "Min. toplam kontenjan" kutusundan değiştirebilirsiniz.
-    <br><br><b style="color:var(--fg)">Ölçüt.</b> "Ortalama yüzdelik dilim", bölümün her programının
-    taban sıralamasının kendi puan türü içindeki yüzdesinin kontenjanla ağırlıklı ortalamasıdır;
-    küçük değer daha rekabetçi demektir.
+    <br><br><b style="color:var(--fg)">Dipnot.</b> Toplam kontenjanı <b style="color:var(--fg)">${fmt(mk)}</b>'in
+    altındaki ${fmt(elenen.length)} bölüm listeye alınmadı; çok küçük kontenjanlı programlar tek bir
+    öğrenciyle sıralamayı yanıltıcı biçimde yukarı çekiyor. Eşik olmasaydı girecek olanlardan bazıları:
+    ${dip.join(' · ')||'yok'}. Eşiği yukarıdaki kutudan değiştirebilirsiniz.
     <br><br><b style="color:var(--fg)">Sıralamalar tahmindir.</b> Kontenjan, taban ve tavan puanlar
-    ÖSYM'nin resmî TABLO-3/TABLO-4 dosyalarından birebir alınmıştır. ÖSYM bu tablolarda
-    <b style="color:var(--fg)">başarı sırası yayımlamaz</b>; sıralamalar, yine ÖSYM'nin resmî
-    <b style="color:var(--fg)">"2026-YKS Yerleştirme Puanlarının Yığınsal Dağılımı"</b> tablosundan
-    (her puan türü için "şu puan ve üstünde kaç aday var", 20 puanlık basamaklar)
-    <b style="color:var(--fg)">probit interpolasyon</b> ile hesaplanmıştır. Modelin doğruluğu, ÖSYM'nin
-    Tıp/Diş/Eczacılık/Hukuk/Mimarlık/Mühendislik/Öğretmenlik barajlarıyla 7 bağımsız noktada
-    kontrol edilmiştir (sapma %0,1–1,5). Ayrıntı için <b style="color:var(--fg)">Yöntem</b> sekmesi.`;
+    ÖSYM'nin resmî TABLO-3/TABLO-4 dosyalarından birebir alınmıştır. ÖSYM bu tablolarda başarı sırası
+    yayımlamaz; sıralamalar yine ÖSYM'nin resmî <b style="color:var(--fg)">"2026-YKS Yerleştirme
+    Puanlarının Yığınsal Dağılımı"</b> tablosundan probit interpolasyonla hesaplanmıştır ve
+    Tıp/Diş/Eczacılık/Hukuk/Mimarlık/Mühendislik/Öğretmenlik barajlarıyla yedi noktada
+    doğrulanmıştır (sapma %0,1–1,5). Ayrıntı: <b style="color:var(--fg)">Yöntem</b> sekmesi.`;
 }
 /* ---------- TÜM PROGRAMLAR ---------- */
 function apply(){
@@ -809,8 +801,9 @@ function bolumPanel(){
   const B=bolumBilgi(),T=bolumAll(),AD=B.ad.toLocaleUpperCase('tr-TR');
   const kaynak=`2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app`;
   const _tk=T.reduce((a,d)=>a+d.tk,0), _ty=T.reduce((a,d)=>a+d.ty,0);
-  const alt=`${B.ad} · ${T.length} program · puan türü ${B.pt} · toplam kontenjan ${fmt(_tk)} · doluluk ${dolKisa(_tk?100*_ty/_tk:null)}`;
+  const alt=`${T.length} program · toplam kontenjan ${fmt(_tk)} · doluluk ${dolKisa(_tk?100*_ty/_tk:null)}`;
   ['#kt1','#kt2','#kt3','#kt4','#kt5','#kt6'].forEach(id=>$(id).textContent=AD);
+  ['#pt1','#pt2','#pt3','#pt4','#pt5','#pt6'].forEach(id=>{const e=$(id); if(e)e.textContent=B.pt});
   ['#cs2','#cs3','#cs4','#cs5','#cs6'].forEach(id=>$(id).textContent=alt);
   ['#sr2','#sr3','#sr4','#sr5'].forEach(id=>$(id).textContent=kaynak);
   $('#pmeta').innerHTML=[`<b>${B.pt}</b> puan türü`,`<b>${fmt(T.length)}</b> program`,
@@ -834,7 +827,7 @@ function bolumPanel(){
     ['Devlet / Vakıf',fmt(T.filter(d=>d.unituru==='DEVLET').reduce((s,d)=>s+d.tk,0))+' / '+
       fmt(T.filter(d=>d.unituru==='VAKIF').reduce((s,d)=>s+d.tk,0))]]
     .map(([a,b])=>`<div class="stat"><div class="k">${a}</div><div class="v${b.length>9?' sm':''}">${b}</div></div>`).join('');
-  $('#kotasub').textContent=alt+(B.baraj?` · ÖSYM başarı sırası barajı ${fmt(B.baraj)}`:' · başarı sırası barajı yok');
+  $('#kotasub').innerHTML=`<b>kontenjan / kota doluluğu</b> · `+alt+(B.baraj?` · ÖSYM başarı sırası barajı ${fmt(B.baraj)}`:' · başarı sırası barajı yok');
   const d1=100*ty/tk;
   $('#kbar1').style.width=d1.toFixed(2)+'%';$('#kbar1').textContent='%'+d1.toFixed(2).replace('.',',');
   $('#klbl1').textContent=`${fmt(ty)} / ${fmt(tk)} — açık ${ac} kadro`+(fz?` (+${fz} eşit puanla kontenjan üstü)`:'');
@@ -910,9 +903,9 @@ function grafikSecim(){
 }
 function gKart(o){
   return `<div class="gcard">
-    <h3><span class="who">${o.ad.toLocaleUpperCase('tr-TR')}</span> — tahmini sıralama bandına göre kontenjan</h3>
-    <div class="gsub">${fmt(o.prog)} program · puan türü ${o.pt} ·
-      toplam kontenjan <b>${fmt(o.kont)}</b> · doluluk <b>${dolKisa(o.dol)}</b></div>
+    <h3><span class="who">${o.ad.toLocaleUpperCase('tr-TR')}</span><span class="badge pt">${o.pt}</span></h3>
+    <div class="gsub">${fmt(o.prog)} program · toplam kontenjan <b>${fmt(o.kont)}</b>
+      · doluluk <b>${dolKisa(o.dol)}</b></div>
     <div class="gbar"></div>
     <div class="src">2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app</div>
   </div>`;
@@ -949,9 +942,6 @@ function topla(keyFn,filterFn){
 }
 const uniRows=()=>{const q=norm($('#uq').value),dz=$('#uduzey').value;
   return topla(d=>d.uni,d=>(!dz||d.duzey===dz)&&(!q||norm(d.uni).includes(q))).sort((a,b)=>b.kont-a.kont)};
-const tumBolumRows=()=>{const q=norm($('#tq').value),dz=$('#tduzey').value,km=+$('#tkmin').value||0;
-  return topla(d=>d.base,d=>(!dz||d.duzey===dz)&&(!q||norm(d.base).includes(q)))
-    .filter(o=>o.kont>=km).sort((a,b)=>b.kont-a.kont)};
 const AGG=[{k:'kont',t:'Kontenjan',n:1,r:o=>fmt(o.kont)},{k:'yer',t:'Yerleşen',n:1,r:o=>fmt(o.yer)},
   {k:'acik',t:'Açık kadro',n:1,r:o=>o.acik>0?`<span class="warn">${fmt(o.acik)}</span>`:'0'},
   {k:'dol',t:'Doluluk',n:1,r:o=>o.dol==null?'—':'%'+o.dol.toFixed(2).replace('.',',')},
@@ -971,38 +961,21 @@ function aggKart(rows,tip){
 function renderUni(){const R=uniRows();
   $('#ulist').innerHTML=mobil()?aggKart(R,'uni'):tablo(R,[{k:'ad',t:'Üniversite',cls:'uni'},
     {k:'sehir',t:'Şehir'},{k:'tur',t:'Tür'},{k:'prog',t:'Program',n:1},...AGG],false)}
-let TB=[];
-function renderTumBolum(){
-  TB=tumBolumRows();
-  const dz=$('#tduzey').value||'tüm düzeyler', km=+$('#tkmin').value||0;
-  $('#tbinfo').textContent=`${fmt(TB.length)} bölüm · ${dz}`+(km?` · min ${fmt(km)} kontenjan`:'');
-  // Puanlar burada YOK; satıra tıklayınca açılan pop-up'ta gösteriliyor.
-  $('#tlist').innerHTML = TB.length ? `<div class="rows1">
-    <div class="r1h"><span class="ad">Bölüm</span><span class="num w1">Kont.</span>
-      <span class="num w2">Doluluk</span><span class="num w3">En iyi sıra</span><span class="ok" style="width:10px"></span></div>
-    ${TB.map((o,i)=>`<div class="r1" data-i="${i}">
-      <span class="ad">${o.ad}</span>
-      <span class="num w1"><b>${kisaSayi(o.kont)}</b></span>
-      <span class="num w2"><b>${dolKisa(o.dol)}</b></span>
-      <span class="num w3"><b>${o.enIyi==null?'—':kisaSayi(o.enIyi)}</b></span>
-      <span class="ok">›</span></div>`).join('')}</div>`
-    : `<div class="card" style="color:var(--dim)">Eşleşen bölüm yok.</div>`;
-  $$('#tlist .r1').forEach(el=>el.onclick=()=>acSheet(TB[+el.dataset.i]));
-}
 const kisaSayi=n=>n==null?'—':(n>=1000?(n/1000).toFixed(n>=10000?0:1).replace('.',',')+'B':String(n));
 function acSheet(o){
   if(!o)return;
-  const kv=[['Program sayısı',fmt(o.prog)],['Toplam kontenjan',fmt(o.kont)],['Yerleşen',fmt(o.yer)],
+  const B=BOLUMLER.find(b=>b.base===o.ad);
+  // ana listede olmayanlar burada: puan türü, yerleşen, açık kadro, taban puanlar
+  const kv=[['Puan türü',o.pt],['Yerleşen',fmt(o.yer)],
     ['Açık kadro',o.acik>0?`<span class="warn">${fmt(o.acik)}</span>`:'0'],
-    ['Doluluk',o.dol==null?'—':'%'+o.dol.toFixed(2).replace('.',',')],
-    ['En iyi sıra ≈',fmt(o.enIyi)],['En dip sıra ≈',fmt(o.enDip)],
-    ['En yüksek taban',fmtP(o.enYuksek)],['En düşük taban',fmtP(o.enDusuk)]];
-  const bp=BOLUMLER.find(b=>b.base===o.ad);
+    ['En yüksek taban',fmtP(o.enIyiPuan)],['En düşük taban',fmtP(o.enDusukPuan)],
+    ['Ortalama dilim',fmtY(o.dilim)]];
   $('#sheet').innerHTML=`<h4>${o.ad}</h4>
-    <div class="sm">${fmt(o.prog)} program${bp?` · puan türü ${bp.pt}`:''}${bp&&bp.baraj?` · ÖSYM barajı ${fmt(bp.baraj)}`:''}</div>
+    <div class="sm">${fmt(o.prog)} program · toplam kontenjan ${fmt(o.kont)} · doluluk ${dolKisa(o.dol)}
+      · tahmini sıra ${fmt(o.enIyiSira)} – ${fmt(o.enDipSira)}${B&&B.baraj?` · ÖSYM barajı ${fmt(B.baraj)}`:''}</div>
     <div class="kv">${kv.map(([k,v])=>`<div><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
     <div class="act">
-      ${bp?`<button class="pri" id="sh-panel">Bölüm panelini aç</button>`:''}
+      ${B?`<button class="pri" id="sh-panel">Bölüm panelini aç</button>`:''}
       <button id="sh-prog">Programları listele</button>
       <button id="sh-close">Kapat</button>
     </div>
@@ -1040,15 +1013,10 @@ function indirOzet(){
     ozetRows().map((o,i)=>[i+1,o.ad,o.pt,o.dilim?.toFixed(3),o.prog,o.kont,o.yer,
       o.acik,o.dol?.toFixed(2),o.enIyiSira,o.enDipSira,o.enIyiPuan,o.enDusukPuan]),'2026-yks-bolum-ozet.csv');
 }
-function indirAgg(hangi){
-  const R=hangi==='uni'?uniRows():tumBolumRows();
-  const H=hangi==='uni'
-    ?['Üniversite','Şehir','Tür','Program','Kontenjan','Yerleşen','Açık Kadro','Doluluk %','En Yüksek Taban','En İyi Sıra']
-    :['Bölüm','Program Sayısı','Kontenjan','Yerleşen','Açık Kadro','Doluluk %','En İyi Sıra (tahmini)','En Dip Sıra (tahmini)','En Yüksek Taban','En Düşük Taban'];
-  csvKaydet(H,R.map(o=>hangi==='uni'
-    ?[o.ad,o.sehir,o.tur,o.prog,o.kont,o.yer,o.acik,o.dol?.toFixed(2),o.enYuksek,o.enIyi]
-    :[o.ad,o.prog,o.kont,o.yer,o.acik,o.dol?.toFixed(2),o.enIyi,o.enDip,o.enYuksek,o.enDusuk]),
-    hangi==='uni'?'2026-yks-universite-ozeti.csv':'2026-yks-tum-bolumler.csv');
+function indirAgg(){
+  csvKaydet(['Üniversite','Şehir','Tür','Program','Kontenjan','Yerleşen','Açık Kadro','Doluluk %','En Yüksek Taban','En İyi Sıra'],
+    uniRows().map(o=>[o.ad,o.sehir,o.tur,o.prog,o.kont,o.yer,o.acik,o.dol?.toFixed(2),o.enYuksek,o.enIyi]),
+    '2026-yks-universite-ozeti.csv');
 }
 </script>
 </body>
