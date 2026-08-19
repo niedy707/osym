@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json, os, re
-from rank_model import rank
+from rank_model import rank, NTOT
 
 ILLER = """ADANA ADIYAMAN AFYONKARAHİSAR AĞRI AMASYA ANKARA ANTALYA ARTVİN AYDIN BALIKESİR
 BİLECİK BİNGÖL BİTLİS BOLU BURDUR BURSA ÇANAKKALE ÇANKIRI ÇORUM DENİZLİ DİYARBAKIR EDİRNE
@@ -93,6 +93,11 @@ def build(path, duzey):
             'pt': pt, 'duzey': duzey, 'sehir': sehir(uni), 'burs': burs, 'dil': dil,
             'kont': i(x['genel_kontenjan']), 'yer': i(x['genel_yerlesen']),
             'min': mn, 'max': mx, 'smin': r_mn, 'smax': r_mx,
+            # yuzde: adayin KENDI puan turu icindeki yuzdelik dilimi.
+            # Farkli puan turleri ancak bu deger uzerinden karsilastirilabilir
+            # (SAY'da 1.135.718 aday varken DIL'de 132.826 aday var).
+            'yuzde': (round(100 * r_mn / NTOT[pt], 4)
+                      if (r_mn is not None and pt in NTOT) else None),
             'guven': c_mn or c_mx or '',
             'kktc': 'kktc uyruklu' in low, 'uolp': 'uolp' in low,
             'uzaktan': 'uzaktan' in low, 'io': 'ikinci öğretim' in low,

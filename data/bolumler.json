@@ -1,0 +1,263 @@
+[
+ {
+  "base": "Tıp",
+  "ad": "Tıp Fakültesi",
+  "pt": "SAY",
+  "baraj": 50000,
+  "kont": 19032,
+  "pay2000": 28.6,
+  "pay50000": 23.93
+ },
+ {
+  "base": "Hukuk",
+  "ad": "Hukuk Fakültesi",
+  "pt": "EA",
+  "baraj": 100000,
+  "kont": 8937,
+  "pay2000": 5.2,
+  "pay50000": 7.4
+ },
+ {
+  "base": "Diş Hekimliği",
+  "ad": "Diş Hekimliği Fakültesi",
+  "pt": "SAY",
+  "baraj": 80000,
+  "kont": 6711,
+  "pay2000": 0.0,
+  "pay50000": 5.48
+ },
+ {
+  "base": "İngiliz Dili ve Edebiyatı",
+  "ad": "İngiliz Dili ve Edebiyatı",
+  "pt": "DİL",
+  "baraj": null,
+  "kont": 4539,
+  "pay2000": 0.26,
+  "pay50000": 4.36
+ },
+ {
+  "base": "Okul Öncesi Öğretmenliği",
+  "ad": "Okul Öncesi Öğretmenliği",
+  "pt": "SÖZ",
+  "baraj": 300000,
+  "kont": 3436,
+  "pay2000": 0.99,
+  "pay50000": 3.47
+ },
+ {
+  "base": "İngilizce Öğretmenliği",
+  "ad": "İngilizce Öğretmenliği",
+  "pt": "DİL",
+  "baraj": 300000,
+  "kont": 3348,
+  "pay2000": 0.0,
+  "pay50000": 3.13
+ },
+ {
+  "base": "Özel Eğitim Öğretmenliği",
+  "ad": "Özel Eğitim Öğretmenliği",
+  "pt": "SÖZ",
+  "baraj": 300000,
+  "kont": 2795,
+  "pay2000": 4.53,
+  "pay50000": 3.01
+ },
+ {
+  "base": "İngilizce Mütercim ve Tercümanlık",
+  "ad": "İngilizce Mütercim ve Tercümanlık",
+  "pt": "DİL",
+  "baraj": null,
+  "kont": 3786,
+  "pay2000": 0.0,
+  "pay50000": 2.64
+ },
+ {
+  "base": "Türkçe Öğretmenliği",
+  "ad": "Türkçe Öğretmenliği",
+  "pt": "SÖZ",
+  "baraj": 300000,
+  "kont": 2852,
+  "pay2000": 0.0,
+  "pay50000": 2.45
+ },
+ {
+  "base": "Eczacılık",
+  "ad": "Eczacılık Fakültesi",
+  "pt": "SAY",
+  "baraj": 100000,
+  "kont": 3221,
+  "pay2000": 0.0,
+  "pay50000": 2.42
+ },
+ {
+  "base": "Bilgisayar Mühendisliği",
+  "ad": "Bilgisayar Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 13404,
+  "pay2000": 0.64,
+  "pay50000": 2.11
+ },
+ {
+  "base": "Elektrik-Elektronik Mühendisliği",
+  "ad": "Elektrik-Elektronik Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 8065,
+  "pay2000": 6.89,
+  "pay50000": 2.06
+ },
+ {
+  "base": "Makine Mühendisliği",
+  "ad": "Makine Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 6702,
+  "pay2000": 0.35,
+  "pay50000": 1.81
+ },
+ {
+  "base": "Gastronomi ve Mutfak Sanatları",
+  "ad": "Gastronomi ve Mutfak Sanatları",
+  "pt": "SÖZ",
+  "baraj": null,
+  "kont": 6243,
+  "pay2000": 0.96,
+  "pay50000": 1.77
+ },
+ {
+  "base": "Turizm Rehberliği",
+  "ad": "Turizm Rehberliği",
+  "pt": "DİL",
+  "baraj": null,
+  "kont": 2124,
+  "pay2000": 0.0,
+  "pay50000": 1.68
+ },
+ {
+  "base": "Endüstri Mühendisliği",
+  "ad": "Endüstri Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 7239,
+  "pay2000": 2.14,
+  "pay50000": 1.58
+ },
+ {
+  "base": "İşletme",
+  "ad": "İşletme",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 12974,
+  "pay2000": 7.82,
+  "pay50000": 1.52
+ },
+ {
+  "base": "Psikoloji",
+  "ad": "Psikoloji",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 10705,
+  "pay2000": 1.98,
+  "pay50000": 1.5
+ },
+ {
+  "base": "İktisat",
+  "ad": "İktisat",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 8656,
+  "pay2000": 7.34,
+  "pay50000": 1.19
+ },
+ {
+  "base": "Yönetim Bilişim Sistemleri",
+  "ad": "Yönetim Bilişim Sistemleri",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 7318,
+  "pay2000": 2.11,
+  "pay50000": 1.17
+ },
+ {
+  "base": "İlahiyat",
+  "ad": "İlahiyat Fakültesi",
+  "pt": "SÖZ",
+  "baraj": null,
+  "kont": 10561,
+  "pay2000": 0.29,
+  "pay50000": 1.17
+ },
+ {
+  "base": "Tarih",
+  "ad": "Tarih",
+  "pt": "SÖZ",
+  "baraj": null,
+  "kont": 3895,
+  "pay2000": 3.51,
+  "pay50000": 0.79
+ },
+ {
+  "base": "Siyaset Bilimi ve Uluslararası İlişkiler",
+  "ad": "Siyaset Bilimi ve Uluslararası İlişkiler",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 3517,
+  "pay2000": 2.87,
+  "pay50000": 0.59
+ },
+ {
+  "base": "Türk Dili ve Edebiyatı",
+  "ad": "Türk Dili ve Edebiyatı",
+  "pt": "SÖZ",
+  "baraj": null,
+  "kont": 3614,
+  "pay2000": 1.4,
+  "pay50000": 0.48
+ },
+ {
+  "base": "Elektronik ve Haberleşme Mühendisliği",
+  "ad": "Elektronik ve Haberleşme Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 483,
+  "pay2000": 1.66,
+  "pay50000": 0.41
+ },
+ {
+  "base": "Uçak Mühendisliği",
+  "ad": "Uçak Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 500,
+  "pay2000": 1.66,
+  "pay50000": 0.41
+ },
+ {
+  "base": "Uluslararası İlişkiler",
+  "ad": "Uluslararası İlişkiler",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 4457,
+  "pay2000": 1.88,
+  "pay50000": 0.37
+ },
+ {
+  "base": "Ekonomi",
+  "ad": "Ekonomi",
+  "pt": "EA",
+  "baraj": null,
+  "kont": 1299,
+  "pay2000": 2.17,
+  "pay50000": 0.17
+ },
+ {
+  "base": "Çeviribilimi",
+  "ad": "Çeviribilimi",
+  "pt": "DİL",
+  "baraj": null,
+  "kont": 112,
+  "pay2000": 1.31,
+  "pay50000": 0.07
+ }
+]
