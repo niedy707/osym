@@ -180,6 +180,21 @@ th .ar{color:var(--accent);margin-left:3px}
   justify-content:flex-end;padding-right:7px;font-size:11px;font-weight:650;color:#04140d}
 .kotalbl{font-size:11.5px;color:var(--dim)}
 .loading{padding:50px 20px;text-align:center;color:var(--dim)}
+/* Oran moduna geçince ~3 sn görünen bilgilendirme */
+#toast{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;
+  padding:24px;pointer-events:none;background:rgba(9,11,15,.25);
+  -webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);
+  animation:tFade 3s ease forwards}
+#toast .tbox{max-width:430px;background:rgba(23,26,33,.72);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.09);border-radius:14px;padding:16px 18px;
+  color:var(--fg);font-size:13px;line-height:1.6;box-shadow:0 16px 44px rgba(0,0,0,.45);
+  animation:tPop 3s cubic-bezier(.2,.8,.3,1) forwards}
+#toast b{color:var(--os3)}
+@keyframes tFade{0%{opacity:0}8%{opacity:1}80%{opacity:1}100%{opacity:0}}
+@keyframes tPop{0%{opacity:0;transform:scale(.95)}8%{opacity:1;transform:scale(1)}
+  80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.98)}}
+@media (prefers-reduced-motion:reduce){#toast,#toast .tbox{animation:tFade 3s linear forwards}}
 /* açılış rozeti — ~1 sn görünür, sonra kendini kaldırır */
 #splash{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
   background:rgba(9,11,15,.25);-webkit-backdrop-filter:blur(1.5px);backdrop-filter:blur(1.5px);
@@ -571,6 +586,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 </section>
 </main>
 <div class="ovl hidden" id="ovl"><div class="sheet" id="sheet"></div></div>
+<div id="toast" class="hidden" aria-live="polite"><div class="tbox" id="toastmsg"></div></div>
 <script>
 setTimeout(()=>{const e=document.getElementById('splash'); if(e) e.remove()},1550);
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -767,6 +783,11 @@ function bind(){
     gOlcu=b.dataset.olcu;
     $$('#golcu .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.olcu===gOlcu));
     renderGrafik(); if(!$('#tab-bolum').classList.contains('hidden')) bolumPanel();
+    if(gOlcu==='oran') toast(
+      '<b>Oran modu.</b> Bantlar eşit genişlikte değil — 1–1.000 aralığında 1.000 aday varken '+
+      '100.000–200.000 aralığında 100.000 aday var. Bu modda bar, <b>o aralıktaki adayların '+
+      'yüzde kaçının bu bölüme yerleştiğini</b> gösterir; böylece geniş ve dar bantlar '+
+      'birbiriyle kıyaslanabilir olur. Barın üzerindeki sayı ise o banttaki kontenjandır.');
   });
   const anaSayfa=()=>sekmeAc('grafik',$$('.tab').find(t=>t.dataset.tab==='grafik'));
   $('#marka').onclick=anaSayfa;
@@ -1240,6 +1261,17 @@ function acSheet(o){
     page=0;apply()};
 }
 function kapatSheet(){$('#ovl').classList.add('hidden')}
+let toastZ=null;
+function toast(html){
+  const t=$('#toast');
+  $('#toastmsg').innerHTML=html;
+  t.classList.remove('hidden');
+  t.style.animation='none'; $('#toast .tbox').style.animation='none';
+  void t.offsetWidth;                       // animasyonu yeniden tetikle
+  t.style.animation=''; $('#toast .tbox').style.animation='';
+  clearTimeout(toastZ);
+  toastZ=setTimeout(()=>t.classList.add('hidden'),3000);
+}
 /* ---------- CSV ---------- */
 const csvHucre=v=>{const s=v==null?'':String(v);return /[";\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
 function csvKaydet(head,rows,ad){
