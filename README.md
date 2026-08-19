@@ -6,6 +6,11 @@
 [![CI](https://github.com/niedy707/osym/actions/workflows/ci.yml/badge.svg)](https://github.com/niedy707/osym/actions/workflows/ci.yml)
 [![canlı](https://img.shields.io/badge/canl%C4%B1-osym--yks.vercel.app-5b9cff)](https://osym-yks.vercel.app)
 
+> **Doğrulama (19.08.2026):** YÖK Atlas 2026 verisi yayımlandı ve modelin tahminleri **18.251
+> program** üzerinde resmî başarı sıralarıyla karşılaştırıldı — **medyan sapma %0,25**. Aynı
+> karşılaştırmada 18.251 programın taban puanı ÖSYM verisiyle **birebir** tuttu (0 uyuşmazlık).
+> Ayrıntı: [KALIBRASYON.md](KALIBRASYON.md).
+
 > **In English** — Turkey's 2026 university placement data (YKS), rebuilt from ÖSYM's own official
 > spreadsheets into one searchable dataset of **21,493 programmes**, with an **estimated success rank
 > (başarı sırası)** that ÖSYM does not publish. Ranks are derived from ÖSYM's official cumulative
@@ -182,7 +187,7 @@ basamakları birebir geri üretir.
 | `bolumler.py` | Panel seçicisindeki bölüm listesi + ÖSYM barajları |
 | `test_model.py` | Değişmez/regresyon testleri (`python3 test_model.py`) |
 | `mcp_server.py` | Bağımlılıksız MCP sunucusu (stdio, JSON-RPC) |
-| `kalibrasyon.py` | YÖK Atlas 2026 çıkınca tahminleri resmî sıralarla karşılaştırır |
+| `kalibrasyon.py` | Tahminleri YÖK Atlas'ın resmî sıralarıyla karşılaştırır → [KALIBRASYON.md](KALIBRASYON.md) |
 | `deploy.sh` | Vercel yayını + kalıcı alias'ın yeniden bağlanması |
 | `.github/workflows/ci.yml` | Kaynak bütünlüğü, veri yeniden üretimi ve testler |
 | `kaynak/` | ÖSYM'nin değiştirilmemiş orijinal dosyaları + indirme bağlantıları |

@@ -42,7 +42,7 @@ def rapor(resmi):
 
     sapmalar = [(abs(r['smin'] - g) / max(1, g), r, g) for r, g in esles]
     yuzdeler = [s * 100 for s, _, _ in sapmalar]
-    sapmalar.sort(reverse=True)
+    sapmalar.sort(key=lambda x: -x[0])   # sadece sapmaya gore; esitlikte dict karsilastirilmasin
 
     bantlar = [(1, 5000), (5000, 20000), (20000, 50000), (50000, 150000),
                (150000, 400000), (400000, 10**9)]

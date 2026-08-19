@@ -26,7 +26,10 @@ header{position:sticky;top:0;z-index:30;border-bottom:1px solid var(--line);
 .brandbar{height:3px;background:linear-gradient(90deg,var(--os1),var(--os2) 38%,var(--os3) 64%,var(--os2) 82%,var(--os1))}
 .hd{padding:12px var(--pad) 0;display:flex;align-items:center;justify-content:space-between;
   gap:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand{display:flex;align-items:center;gap:11px;min-width:0;cursor:pointer;
+  border-radius:12px;padding:3px;margin:-3px;transition:background .12s}
+.brand:hover,.brand:focus-visible{background:rgba(255,255,255,.05);outline:none}
+.brand:focus-visible{box-shadow:0 0 0 2px var(--os2)}
 .logo{flex:0 0 auto;width:46px;height:46px;border-radius:13px;line-height:1;
   background:linear-gradient(150deg,#ff8a1f,var(--os2) 45%,var(--os1));
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
@@ -322,7 +325,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 <header>
   <div class="brandbar"></div>
   <div class="hd">
-    <div class="brand">
+    <div class="brand" id="marka" role="link" tabindex="0" title="Ana sayfa">
       <div class="logo" aria-hidden="true"><b>YKS</b><i>2026</i></div>
       <div class="btxt">
         <div class="h1">2026-YKS Yerleştirme Verisi</div>
@@ -729,6 +732,9 @@ function bind(){
   });
   $('#ocsv').onclick=indirOzet;
   $('#gmod').addEventListener('input',renderGrafik);
+  const anaSayfa=()=>sekmeAc('grafik',$$('.tab').find(t=>t.dataset.tab==='grafik'));
+  $('#marka').onclick=anaSayfa;
+  $('#marka').onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();anaSayfa()} };
   $('#paylas').onclick=async()=>{
     const url=location.origin+'/'+bolumSlug(seciliBolum);
     const b=$('#paylas');
