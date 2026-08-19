@@ -4,6 +4,17 @@
 
 ---
 
+## 0. Uygulama Durumu (19.08.2026 — aynı gün uygulandı)
+
+| Durum | Öneriler |
+|---|---|
+| ✅ Yapıldı (8) | Ö-3 CSV + veri sözlüğü · Ö-4 MCP sunucusu · Ö-5 regresyon testleri · Ö-6 MIT lisansı · Ö-7 CI · Ö-8 açılış yükü bölündü · Ö-9 README rozet/İngilizce · Ö-10 kaynak bütünlüğü |
+| 🟡 Kısmi (2) | **Ö-1** altyapı hazır (`build_data.py` yıl parametreli), ama **kaynak veri engelli**: ÖSYM 2024/2025 sayısal bilgiler sayfalarını sitesinden kaldırmış, Wayback arşivinde de yok. **Ö-2** `kalibrasyon.py` yazıldı ve çalışıyor, ama YÖK Atlas 2026 verisi henüz yayımlanmadı. |
+
+**Ölçülen kazanım:** açılış yükü 1,54 MB → ~50 KB (gzip'li `ozet.json`); tam veri yalnız program
+listesi gereken sekmelerde iniyor. GitHub lisansı artık MIT olarak tanınıyor. Model değişmezleri
+CI'da her push'ta doğrulanıyor.
+
 ## 1. Proje Bugün Ne Durumda
 
 ÖSYM'nin 18.08.2026'da yayımladığı resmî TABLO-3/TABLO-4 dosyalarını 21.493 programlık tek bir veri

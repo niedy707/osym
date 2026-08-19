@@ -1,5 +1,21 @@
 # 2026-YKS Yerleştirme Verisi — kontenjan, taban/tavan puan ve tahmini sıralama
 
+[![lisans MIT](https://img.shields.io/badge/lisans-MIT-blue)](LICENSE)
+[![veri ÖSYM 18.08.2026](https://img.shields.io/badge/veri-%C3%96SYM%2018.08.2026-c45a00)](kaynak/)
+[![program 21.493](https://img.shields.io/badge/program-21.493-28c88a)](data/)
+[![CI](https://github.com/niedy707/osym/actions/workflows/ci.yml/badge.svg)](https://github.com/niedy707/osym/actions/workflows/ci.yml)
+[![canlı](https://img.shields.io/badge/canl%C4%B1-osym--yks.vercel.app-5b9cff)](https://osym-yks.vercel.app)
+
+> **In English** — Turkey's 2026 university placement data (YKS), rebuilt from ÖSYM's own official
+> spreadsheets into one searchable dataset of **21,493 programmes**, with an **estimated success rank
+> (başarı sırası)** that ÖSYM does not publish. Ranks are derived from ÖSYM's official cumulative
+> score-distribution table via probit interpolation, and validated at seven independent points against
+> ÖSYM's own rank thresholds (0.1–1.5% deviation). Unlike every comparable project, this one does not
+> scrape YÖK Atlas — it parses ÖSYM's primary files, so it was unaffected when YÖK Atlas moved to a
+> SPA in April 2026. Live site: **https://osym-yks.vercel.app** · dataset: [`data/`](data/) (JSON +
+> CSV, [field reference](data/README.md)) · MCP server: [`mcp_server.py`](mcp_server.py).
+> Not affiliated with ÖSYM.
+
 ÖSYM'nin 18 Ağustos 2026'da yayımladığı **resmî** yerleştirme dosyalarını (TABLO-3 + TABLO-4)
 tek bir aranabilir veri setine ve yerelde çalışan bir arayüze dönüştürür. Ayrıca ÖSYM'nin
 puan tablolarında **yayımlamadığı** başarı sırasını, yine ÖSYM'nin kendi resmî puan dağılımı
@@ -15,12 +31,27 @@ tablosundan tahmin eder.
 ## Hızlı başlangıç
 
 ```bash
-python3 server.py
+python3 server.py            # yerel arayüz -> http://localhost:8787
+python3 test_model.py        # 10 değişmez testi
 ```
 
-Sonra tarayıcıdan `http://localhost:8787` adresini aç. Harici bağımlılık yok, `pip install` yok —
-sadece Python 3'ün standart kütüphanesi. (Veriyi sıfırdan üretmek istersen `openpyxl` gerekir:
-`pip install openpyxl && python3 build_data.py`)
+Harici bağımlılık yok, `pip install` yok — sadece Python 3'ün standart kütüphanesi.
+Veriyi sıfırdan üretmek için tek ek bağımlılık `openpyxl`:
+
+```bash
+pip install openpyxl
+python3 build_data.py && python3 bolumler.py && python3 ozet.py && python3 test_model.py
+```
+
+### MCP sunucusu
+
+Veri setini Claude Desktop gibi MCP istemcilerinden sorgulamak için:
+
+```json
+{"mcpServers": {"yks2026": {"command": "python3", "args": ["/MUTLAK/YOL/osym/mcp_server.py"]}}}
+```
+
+Araçlar: `bolum_ara` · `bolum_detay` · `program_ara` · `sira_puan`.
 
 ## Arayüzde neler var
 
@@ -142,13 +173,20 @@ basamakları birebir geri üretir.
 
 | Dosya | İşlev |
 |---|---|
-| `server.py` | Bağımlılıksız yerel HTTP sunucusu (gzip'li; 14 MB veri → 1,3 MB) |
+| `server.py` | Bağımlılıksız yerel HTTP sunucusu (gzip destekli) |
 | `index.html` | Tek dosyalık arayüz (vanilla JS, harici CDN yok) |
 | `build_data.py` | `kaynak/*.xlsx` → `data/programlar.json` dönüşümü, şehir/burs/dil ayrıştırma, sıralama hesabı |
 | `rank_model.py` | ÖSYM yığınsal dağılımı + probit interpolasyon. Tek başına çalıştırılabilir |
 | `analiz_25k.py` | "İlk 25.000'in 20.000'i" iddiasının alt/üst sınır testi |
+| `ozet.py` | `data/ozet.json` — açılışta yeterli olan 315 KB'lik önceden hesaplanmış özet |
+| `bolumler.py` | Panel seçicisindeki bölüm listesi + ÖSYM barajları |
+| `test_model.py` | Değişmez/regresyon testleri (`python3 test_model.py`) |
+| `mcp_server.py` | Bağımlılıksız MCP sunucusu (stdio, JSON-RPC) |
+| `kalibrasyon.py` | YÖK Atlas 2026 çıkınca tahminleri resmî sıralarla karşılaştırır |
+| `deploy.sh` | Vercel yayını + kalıcı alias'ın yeniden bağlanması |
+| `.github/workflows/ci.yml` | Kaynak bütünlüğü, veri yeniden üretimi ve testler |
 | `kaynak/` | ÖSYM'nin değiştirilmemiş orijinal dosyaları + indirme bağlantıları |
-| `data/programlar.json` | Üretilmiş veri seti (21.493 program) |
+| `data/` | Üretilmiş veri seti: `programlar.json`, `programlar.csv`, `ozet.json`, `bolumler.json` — [alan sözlüğü](data/README.md) |
 
 ### Veri sözlüğü (`data/programlar.json`)
 

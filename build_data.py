@@ -61,6 +61,13 @@ def i(s):
 
 QUOTAS = [('genel','Genel'), ('ob','Okul Birincisi'), ('y34','34 Yaş Üstü Kadın'), ('sehit','Şehit/Gazi Yakını')]
 
+# Veri yili. Yeni bir yil eklemek icin: kaynak/<yil>/ altina OSYM'nin TABLO-3 ve
+# TABLO-4 xlsx dosyalarini koy, rank_model.CUM_YIL'a o yilin yiginsal dagilim
+# tablosunu ekle ve YIL'i degistir. Cikti data/programlar-<yil>.json olur.
+# 2026 icin kaynak dosyalar dogrudan kaynak/ altindadir (geriye donuk uyum).
+YIL = int(os.environ.get('YKS_YIL', '2026'))
+KAYNAK_DIZIN = 'kaynak' if YIL == 2026 else f'kaynak/{YIL}'
+
 COLS = ["program_kodu","universite_turu","universite_adi","fakulte_adi","program_adi","puan_turu",
         "genel_kontenjan","genel_yerlesen","genel_min_puan","genel_max_puan",
         "ob_kontenjan","ob_yerlesen","ob_min_puan","ob_max_puan",
@@ -154,7 +161,8 @@ def kaynak_dogrula():
 
 
 kaynak_dogrula()
-rows = build('kaynak/tablo4.xlsx', 'Lisans') + build('kaynak/tablo3.xlsx', 'Ön Lisans')
+rows = (build(f'{KAYNAK_DIZIN}/tablo4.xlsx', 'Lisans')
+        + build(f'{KAYNAK_DIZIN}/tablo3.xlsx', 'Ön Lisans'))
 print('Toplam program:', len(rows))
 os.makedirs('data', exist_ok=True)
 json.dump(rows, open('data/programlar.json', 'w', encoding='utf-8'), ensure_ascii=False, separators=(',', ':'))

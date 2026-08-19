@@ -216,20 +216,20 @@
   "pay50000": 0.48
  },
  {
-  "base": "Elektronik ve Haberleşme Mühendisliği",
-  "ad": "Elektronik ve Haberleşme Mühendisliği",
-  "pt": "SAY",
-  "baraj": 300000,
-  "kont": 483,
-  "pay2000": 1.66,
-  "pay50000": 0.41
- },
- {
   "base": "Uçak Mühendisliği",
   "ad": "Uçak Mühendisliği",
   "pt": "SAY",
   "baraj": 300000,
   "kont": 500,
+  "pay2000": 1.66,
+  "pay50000": 0.41
+ },
+ {
+  "base": "Elektronik ve Haberleşme Mühendisliği",
+  "ad": "Elektronik ve Haberleşme Mühendisliği",
+  "pt": "SAY",
+  "baraj": 300000,
+  "kont": 483,
   "pay2000": 1.66,
   "pay50000": 0.41
  },
