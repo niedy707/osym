@@ -27,6 +27,10 @@ h1 span{color:var(--dim);font-weight:400}
 .tab{flex:0 0 auto;white-space:nowrap;padding:7px 13px;border-radius:8px;background:var(--chip);
   cursor:pointer;font-size:12.5px;border:1px solid transparent;user-select:none}
 .tab.on{background:var(--accent);color:#04101f;font-weight:600;border-color:var(--accent)}
+.tabsel{flex:0 0 auto;width:auto;max-width:190px;padding:7px 26px 7px 12px;border-radius:8px;
+  background-color:var(--chip);border:1px solid var(--line);color:var(--fg);font-size:12.5px;
+  background-position:right 8px center}
+.tabsel.on{background-color:var(--accent);color:#04101f;font-weight:600;border-color:var(--accent)}
 .toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px var(--pad);
   border-bottom:1px solid var(--line);background:var(--panel2)}
 .tlbl{color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:.5px}
@@ -123,6 +127,15 @@ th .ar{color:var(--accent);margin-left:3px}
   justify-content:flex-end;padding-right:7px;font-size:11px;font-weight:650;color:#04140d}
 .kotalbl{font-size:11.5px;color:var(--dim)}
 .loading{padding:50px 20px;text-align:center;color:var(--dim)}
+.acc{background:var(--panel);border:1px solid var(--line);border-radius:11px;margin-top:12px;overflow:hidden}
+.acc summary{cursor:pointer;padding:13px;font-size:13px;font-weight:650;list-style:none;
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary::before{content:'▸';color:var(--dim);font-size:12px;transition:transform .15s}
+.acc[open] summary::before{transform:rotate(90deg)}
+.acc summary:hover{background:var(--panel2)}
+.acc .cnt{font-weight:400;color:var(--dim);font-size:11.5px}
+.acc .accbody{padding:0 13px 13px}
 .prose{max-width:820px;line-height:1.75}
 .prose h3{margin:20px 0 8px;font-size:14px}
 .prose ul{padding-left:20px}
@@ -156,8 +169,10 @@ th .ar{color:var(--accent);margin-left:3px}
     <div class="sub">ÖSYM resmî TABLO-3 &amp; TABLO-4 (18.08.2026) · 21.493 program</div>
   </div>
   <div class="tabs">
-    <div class="tab on" data-tab="ozet">Özet</div>
-    <div class="tab" data-tab="bolum">Bölüm Paneli</div>
+    <div class="tab on" data-tab="ozet">Bölüm Özeti</div>
+    <div class="tab" data-tab="bolum" data-bolum="Tıp">Tıp</div>
+    <div class="tab" data-tab="bolum" data-bolum="Bilgisayar Mühendisliği">Bilgisayar Müh.</div>
+    <select class="tabsel" id="tabbsel" aria-label="Diğer bölümler"></select>
     <div class="tab" data-tab="all">Tüm Programlar</div>
     <div class="tab" data-tab="uni">Üniversiteler</div>
     <div class="tab" data-tab="tumbolum">Tüm Bölümler</div>
@@ -229,11 +244,6 @@ th .ar{color:var(--accent);margin-left:3px}
       <div class="csub" id="cs5"></div><div id="burs"></div><div class="src" id="sr5"></div></div>
   </div>
   <!-- 3) tablolar / liste -->
-  <div class="card">
-    <h3><span class="who" id="kt6"></span> — açık kalan kadrolar <span style="font-weight:400;color:var(--dim)">(çoktan aza)</span></h3>
-    <div class="csub" id="cs6"></div>
-    <div id="acik"></div>
-  </div>
   <div class="filters"><div class="frow">
     <div class="f wide"><label>Bu bölümün programlarında ara</label><input id="bq" placeholder="üniversite veya şehir"></div>
     <div class="f"><label>Üni. türü</label><select id="bftur"><option value="">Hepsi</option></select></div>
@@ -241,6 +251,14 @@ th .ar{color:var(--accent);margin-left:3px}
     <div class="f"><label>&nbsp;</label><button class="pri" id="bcsv">CSV indir</button></div>
   </div></div>
   <div id="blist"></div>
+  <details class="acc" id="acikacc">
+    <summary><span class="who" id="kt6"></span> — açık kalan kadrolar
+      <span class="cnt" id="acikcnt"></span></summary>
+    <div class="accbody">
+      <div class="csub" id="cs6"></div>
+      <div id="acik"></div>
+    </div>
+  </details>
 </section>
 
 <!-- ============ TÜM PROGRAMLAR ============ -->
@@ -393,6 +411,10 @@ function init(){
     .forEach(([s,k])=>uniq(k).forEach(v=>$(s).add(new Option(v,v))));
   BOLUMLER.forEach(b=>$('#bsel').add(new Option(b.ad,b.base)));
   $('#bsel').value=seciliBolum;
+  // sekme çubuğundaki "diğer bölümler" menüsü — kısayolu olan ikisi hariç
+  const kisayol=new Set(['Tıp','Bilgisayar Mühendisliği']);
+  $('#tabbsel').add(new Option('Diğer bölümler…',''));
+  BOLUMLER.filter(b=>!kisayol.has(b.base)).forEach(b=>$('#tabbsel').add(new Option(b.ad,b.base)));
   [['min',-1,'Taban puan (yüksek→düşük)'],['min',1,'Taban puan (düşük→yüksek)'],
    ['smin',1,'Sıralama (iyi→kötü)'],['yuzde',1,'Yüzdelik dilim (iyi→kötü)'],
    ['tk',-1,'Kontenjan (çok→az)'],['acik',-1,'Açık kadro (çok→az)'],['uni',1,'Üniversite (A→Z)']]
@@ -428,10 +450,13 @@ function bind(){
     $$('#kktcseg .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.kktc===kktcMode));
     page=0;apply();bolumPanel();renderOzet();aktifSekmeYenile()});
   $$('.tab').forEach(t=>t.onclick=()=>{
-    $$('.tab').forEach(x=>x.classList.remove('on'));t.classList.add('on');
-    ['ozet','bolum','all','uni','tumbolum','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==t.dataset.tab));
-    window.scrollTo({top:0});aktifSekmeYenile()});
-  $('#bsel').onchange=()=>{seciliBolum=$('#bsel').value;bolumPanel()};
+    if(t.dataset.bolum){seciliBolum=t.dataset.bolum;$('#bsel').value=seciliBolum;$('#tabbsel').value='';bolumPanel()}
+    sekmeAc(t.dataset.tab,t)});
+  $('#tabbsel').onchange=()=>{
+    const v=$('#tabbsel').value; if(!v)return;
+    seciliBolum=v;$('#bsel').value=v;bolumPanel();
+    sekmeAc('bolum',null);$('#tabbsel').classList.add('on')};
+  $('#bsel').onchange=()=>{seciliBolum=$('#bsel').value;bolumPanel();sekmeIsaretle()};
   ['#bq','#bftur','#bfburs'].forEach(s=>$(s).addEventListener('input',bolumListe));
   $('#bcsv').onclick=()=>indirProgram(bolumRows(),`2026-yks-${norm(seciliBolum).replace(/\s+/g,'-')}.csv`);
   ['#okont','#opt','#olimit','#oq'].forEach(s=>$(s).addEventListener('input',renderOzet));
@@ -443,8 +468,23 @@ function bind(){
   let t0;window.addEventListener('resize',()=>{clearTimeout(t0);t0=setTimeout(()=>{
     render();bolumListe();renderOzet();aktifSekmeYenile()},220)});
 }
+function sekmeIsaretle(){
+  const kisayol={'Tıp':1,'Bilgisayar Mühendisliği':1};
+  const panelAcik=!$('#tab-bolum').classList.contains('hidden');
+  $$('.tab[data-bolum]').forEach(t=>t.classList.toggle('on',panelAcik&&t.dataset.bolum===seciliBolum));
+  $('#tabbsel').classList.toggle('on',panelAcik&&!kisayol[seciliBolum]);
+  $('#tabbsel').value = (panelAcik&&!kisayol[seciliBolum])?seciliBolum:'';
+}
+function sekmeAc(ad,el){
+  $$('.tab').forEach(x=>x.classList.remove('on'));
+  $('#tabbsel').classList.remove('on');
+  if(el)el.classList.add('on');
+  ['ozet','bolum','all','uni','tumbolum','info'].forEach(n=>$('#tab-'+n).classList.toggle('hidden',n!==ad));
+  sekmeIsaretle(); window.scrollTo({top:0}); aktifSekmeYenile();
+}
 function aktifSekmeYenile(){
-  const cur=$$('.tab').find(t=>t.classList.contains('on')).dataset.tab;
+  const cur=['ozet','bolum','all','uni','tumbolum','info']
+    .find(n=>!$('#tab-'+n).classList.contains('hidden'))||'ozet';
   if(cur==='uni')renderUni();
   if(cur==='tumbolum')renderTumBolum();
   $('#kktcinfo').textContent=kktcMode==='out'
@@ -531,12 +571,12 @@ function renderOzet(){
       {k:'prog',t:'Program',n:1,r:o=>fmt(o.prog)},
       {k:'kont',t:'Kontenjan',n:1,r:o=>fmt(o.kont)},
       {k:'yer',t:'Yerleşen',n:1,r:o=>fmt(o.yer)},
-      {k:'dol',t:'Doluluk',n:1,r:o=>o.dol==null?'—':'%'+o.dol.toFixed(2).replace('.',',')},
       {k:'acik',t:'Açık kadro',n:1,r:o=>o.acik>0?`<span class="warn">${fmt(o.acik)}</span>`:'0'},
-      {k:'enIyiPuan',t:'En yüksek taban',n:1,r:o=>fmtP(o.enIyiPuan)},
+      {k:'dol',t:'Doluluk',n:1,r:o=>o.dol==null?'—':'%'+o.dol.toFixed(2).replace('.',',')},
       {k:'enIyiSira',t:'En iyi sıra ≈',n:1,r:o=>fmt(o.enIyiSira)},
-      {k:'enDusukPuan',t:'En düşük taban',n:1,r:o=>fmtP(o.enDusukPuan)},
-      {k:'enDipSira',t:'En dip sıra ≈',n:1,r:o=>fmt(o.enDipSira)}],false);
+      {k:'enDipSira',t:'En dip sıra ≈',n:1,r:o=>fmt(o.enDipSira)},
+      {k:'enIyiPuan',t:'En yüksek taban',n:1,r:o=>fmtP(o.enIyiPuan)},
+      {k:'enDusukPuan',t:'En düşük taban',n:1,r:o=>fmtP(o.enDusukPuan)}],false);
   // dipnot: kucuk kontenjani yuzunden elenen ama rekabetci bolumler
   const dip=elenen.filter(o=>o.dilim<= (gecen[Math.min(gecen.length-1,49)]?.dilim ?? 100))
     .slice(0,22).map(o=>`${o.ad} (${fmt(o.kont)})`);
@@ -545,10 +585,17 @@ function renderOzet(){
     çok küçük kontenjanlı programlar tek bir öğrenciyle sıralamayı yanıltıcı biçimde yukarı çekiyor.
     Eşik olmasaydı listeye girecek olanlardan bazıları (parantez içinde kontenjanları):
     ${dip.join(' · ')||'yok'}. Eşiği yukarıdaki "Min. toplam kontenjan" kutusundan değiştirebilirsiniz.
-    <br><br>Ölçüt olan <b style="color:var(--fg)">ortalama yüzdelik dilim</b>, bölümün her programının
+    <br><br><b style="color:var(--fg)">Ölçüt.</b> "Ortalama yüzdelik dilim", bölümün her programının
     taban sıralamasının kendi puan türü içindeki yüzdesinin kontenjanla ağırlıklı ortalamasıdır;
-    küçük değer daha rekabetçi demektir. Kontenjan ve puanlar ÖSYM resmî verisidir,
-    <b style="color:var(--fg)">sıralamalar tahmindir</b>.`;
+    küçük değer daha rekabetçi demektir.
+    <br><br><b style="color:var(--fg)">Sıralamalar tahmindir.</b> Kontenjan, taban ve tavan puanlar
+    ÖSYM'nin resmî TABLO-3/TABLO-4 dosyalarından birebir alınmıştır. ÖSYM bu tablolarda
+    <b style="color:var(--fg)">başarı sırası yayımlamaz</b>; sıralamalar, yine ÖSYM'nin resmî
+    <b style="color:var(--fg)">"2026-YKS Yerleştirme Puanlarının Yığınsal Dağılımı"</b> tablosundan
+    (her puan türü için "şu puan ve üstünde kaç aday var", 20 puanlık basamaklar)
+    <b style="color:var(--fg)">probit interpolasyon</b> ile hesaplanmıştır. Modelin doğruluğu, ÖSYM'nin
+    Tıp/Diş/Eczacılık/Hukuk/Mimarlık/Mühendislik/Öğretmenlik barajlarıyla 7 bağımsız noktada
+    kontrol edilmiştir (sapma %0,1–1,5). Ayrıntı için <b style="color:var(--fg)">Yöntem</b> sekmesi.`;
 }
 /* ---------- TÜM PROGRAMLAR ---------- */
 function apply(){
@@ -676,6 +723,10 @@ function bolumPanel(){
     {k:'sehir',t:'Şehir'},{k:'prog',t:'Program',cls:'prog'},
     {k:'tk',t:'Top. kont.',n:1},{k:'_det',t:'Hangi kontenjan'}],false)
     :'<div style="color:var(--dim);padding:6px 0">Açık kadro yok — tüm kontenjan doldu.</div>';
+  const acikTop=A.reduce((s2,d)=>s2+d.acik,0);
+  $('#acikcnt').textContent = acikTop
+    ? `— ${fmt(acikTop)} kadro / ${fmt(A.length)} programda · açmak için tıklayın`
+    : '— açık kadro yok, tüm kontenjan doldu';
   bolumListe();
 }
 function bolumListe(){
@@ -748,10 +799,10 @@ function indirProgram(rows,ad){
       d.acik,d.fazla,d.min,d.max,d.smin,d.yuzde,d.smax,d.tk,d.ty]),ad);
 }
 function indirOzet(){
-  csvKaydet(['Sıra','Bölüm','Puan Türü','Ort. Yüzdelik Dilim','Program','Kontenjan','Yerleşen','Doluluk %',
-    'Açık Kadro','En Yüksek Taban','En İyi Sıra','En Düşük Taban','En Dip Sıra'],
-    ozetRows().map((o,i)=>[i+1,o.ad,o.pt,o.dilim?.toFixed(3),o.prog,o.kont,o.yer,o.dol?.toFixed(2),
-      o.acik,o.enIyiPuan,o.enIyiSira,o.enDusukPuan,o.enDipSira]),'2026-yks-bolum-ozet.csv');
+  csvKaydet(['Sıra','Bölüm','Puan Türü','Ort. Yüzdelik Dilim','Program','Kontenjan','Yerleşen',
+    'Açık Kadro','Doluluk %','En İyi Sıra (tahmini)','En Dip Sıra (tahmini)','En Yüksek Taban','En Düşük Taban'],
+    ozetRows().map((o,i)=>[i+1,o.ad,o.pt,o.dilim?.toFixed(3),o.prog,o.kont,o.yer,
+      o.acik,o.dol?.toFixed(2),o.enIyiSira,o.enDipSira,o.enIyiPuan,o.enDusukPuan]),'2026-yks-bolum-ozet.csv');
 }
 function indirAgg(hangi){
   const R=hangi==='uni'?uniRows():tumBolumRows();
