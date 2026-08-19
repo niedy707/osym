@@ -123,6 +123,37 @@ def build(path, duzey):
         out.append(rec)
     return out
 
+def kaynak_dogrula():
+    """kaynak/SHA256SUMS ile ÖSYM dosyalarinin degismedigini teyit eder.
+
+    Projenin tum guvenilirlik iddiasi "bu sayilar ÖSYM'nin resmi dosyasindan
+    birebir geldi" cumlesine dayaniyor; bozulmus ya da yanlislikla degistirilmis
+    bir kaynak dosyasiyla veri uretilmesini engeller.
+    """
+    import hashlib
+    yol = 'kaynak/SHA256SUMS'
+    if not os.path.exists(yol):
+        print('UYARI: kaynak/SHA256SUMS yok, butunluk dogrulamasi atlandi')
+        return
+    hata = []
+    for satir in open(yol, encoding='utf-8'):
+        satir = satir.strip()
+        if not satir:
+            continue
+        beklenen, ad = satir.split()[0], satir.split()[-1]
+        p = os.path.join('kaynak', ad)
+        if not os.path.exists(p):
+            hata.append(f'{ad}: dosya yok')
+            continue
+        h = hashlib.sha256(open(p, 'rb').read()).hexdigest()
+        if h != beklenen:
+            hata.append(f'{ad}: ozet uyusmuyor\n    beklenen {beklenen}\n    bulunan  {h}')
+    if hata:
+        raise SystemExit('KAYNAK DOGRULAMA BASARISIZ:\n  ' + '\n  '.join(hata))
+    print('kaynak dosyalari dogrulandi (SHA-256)')
+
+
+kaynak_dogrula()
 rows = build('kaynak/tablo4.xlsx', 'Lisans') + build('kaynak/tablo3.xlsx', 'Ön Lisans')
 print('Toplam program:', len(rows))
 os.makedirs('data', exist_ok=True)
