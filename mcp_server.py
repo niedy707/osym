@@ -9,12 +9,13 @@ Claude Desktop / diger MCP istemcileri icin yapilandirma:
         "args": ["/MUTLAK/YOL/osym/mcp_server.py"]}}}
 
 Sunulan araclar:
-  bolum_ara        — bolum adina gore ozet (kontenjan, doluluk, tahmini sira araligi)
+  bolum_ara        — bolum adina gore ozet (kontenjan, doluluk, basari sirasi araligi)
   program_ara      — universite/bolum/sehir filtreleriyle program listesi
   bolum_detay      — tek bolumun tam ozeti + siralama bandi dagilimi
   sira_puan        — bir tahmini siranin karsiligi olan yerlestirme puani (ve tersi)
 
-NOT: siralamalar tahmindir; ayrinti icin rank_model.py ve README.
+NOT: siralar cogunlukla YOK Atlas'in RESMI basari sirasi; resmi sirasi olmayan
+programlarda model tahmini kullanilir (sirakaynak alanina bakin).
 """
 import json, os, sys
 
@@ -97,19 +98,19 @@ def sira_puan(sira=None, puan=None, puan_turu='SAY'):
 
 
 ARACLAR = [
-    ('bolum_ara', 'Bölümleri ara ve özetlerini döndür (kontenjan, doluluk, tahmini sıra aralığı).',
+    ('bolum_ara', 'Bölümleri ara ve özetlerini döndür (kontenjan, doluluk, başarı sırası aralığı).',
      {'sorgu': ('string', 'Bölüm adı parçası; boş bırakılırsa tümü'),
       'sirala': ('string', "rekabetci | kontenjan | puan"),
       'kktc_dahil': ('boolean', 'KKTC üniversiteleri ve KKTC uyruklu kontenjanları dahil et'),
       'limit': ('integer', 'En fazla kaç bölüm (varsayılan 20)')}, bolum_ara),
-    ('bolum_detay', 'Tek bölümün tam özeti ve tahmini sıralama bandı dağılımı.',
+    ('bolum_detay', 'Tek bölümün tam özeti ve başarı sırası bandı dağılımı.',
      {'bolum': ('string', 'Bölüm adı'), 'kktc_dahil': ('boolean', '')}, bolum_detay),
     ('program_ara', 'Program listesi: bölüm/üniversite/şehir/puan türü filtreleriyle.',
      {'bolum': ('string', ''), 'universite': ('string', ''), 'sehir': ('string', ''),
       'puan_turu': ('string', 'SAY | EA | SÖZ | DİL | TYT'),
       'duzey': ('string', 'Lisans | Ön Lisans'), 'kktc_dahil': ('boolean', ''),
       'limit': ('integer', 'Varsayılan 50')}, program_ara),
-    ('sira_puan', 'Tahmini sıra <-> yerleştirme puanı dönüşümü.',
+    ('sira_puan', 'Sıra <-> yerleştirme puanı dönüşümü (model tahmini).',
      {'sira': ('integer', ''), 'puan': ('number', ''), 'puan_turu': ('string', 'SAY | EA | SÖZ | DİL | TYT')},
      sira_puan),
 ]

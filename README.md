@@ -48,7 +48,8 @@ Veriyi sıfırdan üretmek için tek ek bağımlılık `openpyxl`:
 
 ```bash
 pip install openpyxl
-python3 build_data.py && python3 bolumler.py && python3 ozet.py && python3 test_model.py
+python3 build_data.py && python3 bolumler.py && python3 ozet.py && python3 dagilim.py \
+  && python3 test_model.py
 ```
 
 ### MCP sunucusu

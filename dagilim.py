@@ -145,7 +145,10 @@ def varyant(rows):
         out.append({
             'ad': ad,
             'pt': pt_of[ad],
-            'kont': sum(r['tk'] for r in prg),
+            # ozet.py ile ayni tanim: TUM Lisans programlarinin kontenjani. seri()
+            # yalnizca yerlesen>0 olanlari isliyor; buradan saymak Tip'i 19.044
+            # yerine 19.032 gosteriyordu (ozet.json ile celisiyordu).
+            'kont': tam.get(ad, 0),
             'yer': sum(r['ty'] for r in prg),
             'bas': k0,          # ilk kovanin indisi (sira = bas*1000)
             'v': deger,         # her kovadaki kisi sayisi
