@@ -116,12 +116,12 @@
    "id": "Ö-11",
    "baslik": "YÖK Atlas scraping ile resmî sıra almak",
    "bolum": "mimari",
-   "durum": "vazgeçildi",
+   "durum": "yapıldı",
    "ilk_gorulme": "2026-08-19",
-   "durum_tarihi": "2026-08-19",
+   "durum_tarihi": "2026-08-20",
    "skor": 0,
    "guven": "✅",
-   "not": "Rakiplerin tamamı SPA geçişinde kırıldı; ÖSYM birincil kaynak üstünlüğü feda edilmez"
+   "not": "Ö-2 kapsamında YAPILDI: resmi_sira.py YÖK Atlas tercih kılavuzu API'sinden 18.251 programın resmî başarı sırasını çekiyor. Önceki \"vazgeçildi\" gerekçesi (ÖSYM birincil kaynak üstünlüğü feda edilmez) geçerliliğini korudu: veri hattı hâlâ ÖSYM XLSX üzerine kurulu, YÖK Atlas yalnızca sıra alanını besliyor ve dosya yoksa proje tahminle çalışmaya devam ediyor."
   },
   {
    "id": "Ö-12",

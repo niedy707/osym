@@ -5,24 +5,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 A static, dependency-free site that turns ÖSYM's official 2026-YKS placement files into a searchable
-dataset, and adds an **estimated başarı sırası (success rank)** that ÖSYM does not publish. Turkish is
+dataset and attaches the **başarı sırası (success rank)** that ÖSYM does not publish in those files.
+Ranks come from two sources — YÖK Atlas's official rank where it exists, the model's estimate
+otherwise. Turkish is
 the language of the UI, the data, the commit messages and the code comments — keep it that way.
 
 ## Commands
 
 ```bash
 python3 server.py                 # yerel sunucu -> http://localhost:8787 (PORT env ile değiştirilir)
-python3 build_data.py             # kaynak/*.xlsx -> data/programlar.json   (openpyxl gerekir)
-python3 bolumler.py               # data/programlar.json -> data/bolumler.json
+python3 test_model.py             # 12 değişmez/regresyon testi — her değişiklikten sonra koş
 python3 rank_model.py             # modelin kendi kendini doğrulaması (basamakları birebir üretmeli)
-python3 analiz_25k.py             # "ilk 25.000'in 20.000'i tıp" iddiasının alt/üst sınır testi
-vercel --prod --yes               # Vercel'e yayın
+./deploy.sh                       # Vercel'e yayın + alias'ı yeniden bağla
 ```
 
-**Regeneration order matters:** `build_data.py` must run before `bolumler.py` — the latter reads
-`data/programlar.json`. Any edit to `rank_model.py` invalidates both JSON files; rebuild both.
+Veri hattı (bu **sırayla** koşar, her adım öncekinin çıktısını okur):
 
-There is no test suite, no linter and no build step. Verification is done against the invariants below.
+```bash
+pip install openpyxl
+python3 resmi_sira.py             # (nadiren) YÖK Atlas -> kaynak/yokatlas_basari_sirasi.json
+python3 build_data.py             # kaynak/*.xlsx + resmî sıra -> data/programlar.{json,csv}
+python3 bolumler.py               # -> data/bolumler.json      (panel seçicisi + barajlar)
+python3 ozet.py                   # -> data/ozet.json          (açılışta inen küçük özet)
+python3 dagilim.py                # -> data/dagilim.json       (çizgi grafik serileri)
+python3 kalibrasyon.py <resmi.json>   # -> KALIBRASYON.md
+python3 analiz_25k.py             # "ilk 25.000'in 20.000'i tıp" iddiasının alt/üst sınır testi
+```
+
+`rank_model.py`'ye dokunmak dört JSON'u da geçersiz kılar; hepsini yeniden üret.
+CI (`.github/workflows/ci.yml`) bu üretimi sıfırdan koşup `git diff --exit-code -- data/` ile
+depodakiyle karşılaştırır — çıktı **belirlenimci** olmalı (sıralamalarda tie-break şart).
 
 Paylaşım görsellerini üretmek (headless Chrome, `paylas.html` / `paylas-tw.html` kaynak):
 
@@ -33,11 +45,12 @@ Paylaşım görsellerini üretmek (headless Chrome, `paylas.html` / `paylas-tw.h
 ## Architecture
 
 ```
-kaynak/tablo3.xlsx  ─┐
-kaynak/tablo4.xlsx  ─┴─> build_data.py ─> data/programlar.json ─> bolumler.py ─> data/bolumler.json
-                              │                    │                                    │
-                        rank_model.py              └────────> index.html <──────────────┘
-                     (probit interpolasyon)                (tek dosya, framework yok)
+kaynak/tablo3.xlsx ─┐                                    ┌─> bolumler.py ─> bolumler.json ─┐
+kaynak/tablo4.xlsx ─┼─> build_data.py ─> programlar.json ─┼─> ozet.py     ─> ozet.json     ─┤
+yokatlas_basari_    │        ▲              + .csv        └─> dagilim.py  ─> dagilim.json  ─┤
+  sirasi.json ──────┘        │                                                             │
+                       rank_model.py                          index.html <─────────────────┘
+                    (probit interpolasyon)                 (tek dosya, framework yok)
 ```
 
 - **`rank_model.py` is the analytical core.** `CUM` is the *"2026-YKS Yerleştirme Puanlarının Yığınsal
@@ -52,10 +65,18 @@ kaynak/tablo4.xlsx  ─┴─> build_data.py ─> data/programlar.json ─> bolu
 - **`bolumler.py`** picks which bölümler appear in the panel's dropdown: union of "more than 1% of the
   kontenjan whose taban sıra is inside the top 2.000" and the same test for the top 50.000. It also
   holds `BARAJ_TAM` / `BARAJ_SONEK`, ÖSYM's official 2026 başarı sırası thresholds.
-- **`index.html`** is one self-contained file: vanilla JS, no CDN, no bundler. It fetches both JSON
-  files and renders tables on desktop, cards on mobile (`mobil()` = width < 768). Editing it means
-  editing the deployed artifact directly.
-- **`server.py`** exists mainly to gzip the 14 MB JSON down to ~1.3 MB; stdlib only.
+- **`index.html`** is one self-contained file: vanilla JS, no CDN, no bundler. On load it fetches
+  only `ozet.json` + `bolumler.json` (~44 KB gzipped); the 15 MB `programlar.json` and the 806 KB
+  `dagilim.json` are **lazy-loaded** when a tab needs them. Desktop renders tables, mobile renders
+  cards or single-line rows (`mobil()` = width < 768). Editing it means editing the deployed artifact.
+- **`ozet.py` / `dagilim.py`** precompute everything the default tabs need so the first paint does
+  not require the full dataset. `dagilim.py` also enforces a physical constraint: a 1.000-rank bucket
+  cannot hold more than 1.000 people, and the excess is *moved* to neighbouring buckets rather than
+  clipped, so each bölüm's curve still integrates to its real yerleşen count.
+- **`resmi_sira.py`** fetches YÖK Atlas's official ranks once into `kaynak/`. The pipeline is **not**
+  dependent on it — if the file is missing, everything falls back to estimated ranks.
+- **`server.py`** serves with gzip and falls back to `index.html` for extension-less paths, mirroring
+  the Vercel rewrite that powers `/tip`, `/hemsirelik` etc.; stdlib only.
 
 ## Domain invariants — check these after touching the pipeline
 
@@ -65,19 +86,25 @@ Regressions here are silent and end up in public infographics, so verify explici
 |---|---|
 | Toplam yerleşen (tüm veri) | **730.854** — ÖSYM'nin resmî PDF'iyle birebir |
 | Tıp toplam kontenjan / yerleşen | 19.044 / 18.993 (KKTC dahil) |
-| En dip taban sırası: Tıp / Diş / Eczacılık / Hukuk | 49.241 / 79.783 / 99.643 / 99.923 |
-| ÖSYM barajı: Tıp / Diş / Eczacılık / Hukuk | 50.000 / 80.000 / 100.000 / 100.000 |
-| Mimarlık / Mühendislik / Öğretmenlik | 250.397, 300.841, 300.488 vs. baraj 250.000 / 300.000 / 300.000 |
+| En dip **gösterilen** sıra (`sira`): Tıp / Diş / Mimarlık | 49.623 / 79.895 / 250.279 |
+| ÖSYM barajı: Tıp / Diş / Eczacılık / Hukuk / Mimarlık | 50.000 / 80.000 / 100.000 / 100.000 / 250.000 |
+| Modelin kalibrasyonu (18.251 programda) | medyan sapma **%0,25** — `KALIBRASYON.md` |
+| Dağılım grafiği: her puan türünde kova toplamı | **≤ 1.000**, eğri toplamı = gerçek yerleşen |
 
-The last three rows are the model's only real accuracy test: a bölüm's bottom program must land just
-under ÖSYM's threshold. Deviation is currently %0,1–1,5. If a change pushes it outside ~2%, the change
-is wrong, not the data.
+`test_model.py` bunların hepsini koşuyor; elle kontrol yerine onu çalıştır. Baraj satırı artık
+doğruluk testi değil **veri bütünlüğü** testidir: resmî sıra barajın üstüne çıkamaz. Modelin
+doğruluğu ayrı olarak `KALIBRASYON.md`'de ölçülür.
 
 ## Concepts that are easy to get wrong
 
+- **Three rank fields, do not confuse them.** `rsira` = YÖK Atlas's official başarı sırası (18.251
+  programmes). `smin` = the model's estimate, always kept for calibration. `sira` = what the UI shows
+  (`rsira` if present, else `smin`), and `sirakaynak` says which. Everything user-facing —
+  `yuzde`, summaries, charts, baraj checks — must use `sira`, never `smin`.
 - **Yerleştirme puanı ≠ başarı sırası.** The scores in TABLO-3/4 are *yerleştirme puanı* (sınav puanı +
-  OBP katkısı). ÖSYM's official *başarı sırası* is computed on the OBP-free sınav puanı. Ranks here are
-  therefore close to, but never identical to, YÖK Atlas. Say so wherever a rank is shown.
+  OBP katkısı); the official başarı sırası is computed on the OBP-free sınav puanı. That is why the
+  *estimate* never matches YÖK Atlas exactly (median deviation 0,25%). Where `rsira` exists the
+  displayed rank **is** the official one — do not label it "tahmini". Mark estimates with `≈`.
 - **Ranks are not comparable across puan türü.** SAY has 1.135.718 candidates, DİL only 132.826 — rank
   15.000 means something completely different in each. Any cross-bölüm comparison must use the `yuzde`
   field (percentile within own puan türü), never `smin`. Ranking by raw `smin` made Japonca

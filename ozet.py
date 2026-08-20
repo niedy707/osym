@@ -40,35 +40,43 @@ def bandla(rows, baraj):
 
 
 def varyant(rows):
+    # Bolum TOPLAMLARI (kontenjan/yerlesen/acik) tum Lisans programlarini icermeli;
+    # aksi halde hic dolmamis (sirasi olmayan) programlarin acik kadrolari ozetten
+    # dusuyor ve Tip toplami 19.044 yerine 19.032 gorunuyordu. Sira/puan tabanli
+    # alanlar yalnizca sirasi olan programlardan hesaplanir.
     g = {}
     for r in rows:
-        if r['duzey'] != 'Lisans' or r['sira'] is None or r.get('yuzde') is None:
+        if r['duzey'] != 'Lisans':
             continue
         g.setdefault(r['base'], []).append(r)
 
     out = []
     for ad, v in g.items():
-        kont = sum(x['tk'] for x in v)
+        sirali = [x for x in v if x['sira'] is not None and x.get('yuzde') is not None]
+        if not sirali:
+            continue
+        kont = sum(x['tk'] for x in v)          # TUM programlar
         yer = sum(x['ty'] for x in v)
+        kont_s = sum(x['tk'] for x in sirali)   # yalnizca sirasi olanlar (agirlik icin)
         pts = {}
         for x in v:
             pts[x['pt']] = pts.get(x['pt'], 0) + x['tk']
         pt = max(pts, key=pts.get)
-        mins = [x['min'] for x in v if x['min'] is not None]
-        sirs = [x['sira'] for x in v]
+        mins = [x['min'] for x in sirali if x['min'] is not None]
+        sirs = [x['sira'] for x in sirali]
         out.append({
             'ad': ad, 'slug': slug(ad), 'pt': pt, 'prog': len(v), 'kont': kont, 'yer': yer,
             'acik': sum(x['acik'] for x in v), 'fazla': sum(x['fazla'] for x in v),
-            'dilim': round(sum(x['yuzde'] * x['tk'] for x in v) / max(1, kont), 4),
+            'dilim': round(sum(x['yuzde'] * x['tk'] for x in sirali) / max(1, kont_s), 4),
             'dol': round(100 * yer / kont, 4) if kont else None,
             'enIyiPuan': max(mins) if mins else None,
             'enDusukPuan': min(mins) if mins else None,
             'enIyiSira': min(sirs), 'enDipSira': max(sirs),
             'baraj': baraj_bul(ad),
             # kontenjanin yuzde kaci RESMI siraya dayaniyor (gerisi tahmin)
-            'resmiPay': round(100 * sum(x['tk'] for x in v if x['sirakaynak'] == 'resmi')
-                              / max(1, kont), 1),
-            'bandlar': bandla(v, baraj_bul(ad)),
+            'resmiPay': round(100 * sum(x['tk'] for x in sirali if x['sirakaynak'] == 'resmi')
+                              / max(1, kont_s), 1),
+            'bandlar': bandla(sirali, baraj_bul(ad)),
         })
     out.sort(key=lambda o: (o['dilim'], o['ad']))   # esit dilimde ad ile sabitle
     return out
@@ -83,6 +91,11 @@ def uret():
         'toplam_kontenjan': sum(r['tk'] for r in rows),
         'toplam_yerlesen': sum(r['ty'] for r in rows),
         'ntot': NTOT,
+        # arayuzun "kac program resmi, kac tahmini" cumlesini veriden kurmasi icin
+        'sirakaynak': {
+            'resmi': sum(1 for r in rows if r.get('sirakaynak') == 'resmi'),
+            'tahmini': sum(1 for r in rows if r.get('sirakaynak') == 'tahmini'),
+        },
         'bolumler': {
             'in': varyant(rows),
             'out': varyant([r for r in rows if not kktc(r)]),

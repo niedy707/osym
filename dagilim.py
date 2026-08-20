@@ -96,12 +96,19 @@ def varyant(rows):
     # baska ise yaramiyor. Kural: kontenjani 50'den azsa VE ilk 10.000 icinde tek
     # bir yerlesenı bile yoksa disarida birak. Ilk 10.000'de bir kisisi olan
     # kucuk bolum grafige GIRER.
-    def kalsin(prg):
-        if sum(r['tk'] for r in prg) >= ELEME_KONT:
+    def kalsin(prg, tam_kont):
+        # Kontenjan esigi bolumun TUM Lisans kontenjanindan hesaplanir; yerlesmesi
+        # olmayan programlari saymamak, 53 kontenjanli Felsefe Grubu Ogretmenligi'ni
+        # "50'den az" sanip elemeye yol aciyordu.
+        if tam_kont >= ELEME_KONT:
             return True
         return any((r.get('smax') or r['sira']) <= ELEME_SIRA for r in prg if r.get('ty'))
 
-    elenen = [ad for ad, prg in g.items() if not kalsin(prg)]
+    tam = {}
+    for r in rows:
+        if r['duzey'] == 'Lisans':
+            tam[r['base']] = tam.get(r['base'], 0) + r['tk']
+    elenen = [ad for ad, prg in g.items() if not kalsin(prg, tam.get(ad, 0))]
     for ad in elenen:
         g.pop(ad)
 
@@ -125,7 +132,16 @@ def varyant(rows):
             continue
         k0, k1 = min(kova), max(kova)
         # bas taraftaki bos kovalari saklamamak icin baslangic indisi + dizi
-        deger = [round(kova.get(k, 0)) for k in range(k0, k1 + 1)]
+        # Duz round() her bolumde yukari yuvarlayinca kova toplami 1.000'i 1-2 kisi
+        # asabiliyordu; asagi yuvarlayip en buyuk kalanlara dagitmak toplami korur.
+        kesirli = [kova.get(k, 0) for k in range(k0, k1 + 1)]
+        taban = [int(x) for x in kesirli]
+        eksik = int(round(sum(kesirli) - sum(taban)))
+        if eksik > 0:
+            sira_k = sorted(range(len(kesirli)), key=lambda i: -(kesirli[i] - taban[i]))
+            for i in sira_k[:eksik]:
+                taban[i] += 1
+        deger = taban
         out.append({
             'ad': ad,
             'pt': pt_of[ad],
@@ -135,6 +151,60 @@ def varyant(rows):
             'v': deger,         # her kovadaki kisi sayisi
         })
     print(f'  elenen bölüm: {len(elenen)}')
+    return out
+
+
+def tamsayi_onar(out, tur=40):
+    """Yuvarlama sonrasi kalan 1-2 kisilik kapasite asimlarini tamsayi duzeyinde giderir.
+
+    Kapasite cozucusu ondalikli calisiyor ve toplamlari tam 1.000'e oturtuyor; ardindan
+    her bolum kendi toplamini korumak icin yukari yuvarlaninca kova 1.001-1.002'ye
+    cikabiliyor. Burada fazlalik, o kovadaki en buyuk bolumden alinip AYNI bolumun
+    bos kapasitesi olan komsu kovasina taşinir — bolum toplami degismez, kova siniri
+    saglanir.
+    """
+    idx = {o['ad']: o for o in out}
+    for _ in range(tur):
+        toplam = {}
+        for o in out:
+            for j, v in enumerate(o['v']):
+                kk = (o['pt'], o['bas'] + j)
+                toplam[kk] = toplam.get(kk, 0) + v
+        asan = [kk for kk, t in toplam.items() if t > KOVA]
+        if not asan:
+            return True
+        for pt, k in asan:
+            fazla = toplam[(pt, k)] - KOVA
+            adaylar = sorted((o for o in out
+                              if o['pt'] == pt and 0 <= k - o['bas'] < len(o['v'])),
+                             key=lambda o: -o['v'][k - o['bas']])
+            for o in adaylar:
+                if fazla <= 0:
+                    break
+                j = k - o['bas']
+                al = min(fazla, o['v'][j])
+                # ayni bolumun bos kapasiteli komsu kovasini bul
+                for d in range(1, 60):
+                    for jj in (j - d, j + d):
+                        if not (0 <= jj < len(o['v'])):
+                            continue
+                        bos = KOVA - toplam.get((pt, o['bas'] + jj), 0)
+                        if bos >= al:
+                            o['v'][j] -= al
+                            o['v'][jj] += al
+                            toplam[(pt, k)] -= al
+                            toplam[(pt, o['bas'] + jj)] = toplam.get((pt, o['bas'] + jj), 0) + al
+                            fazla -= al
+                            al = 0
+                            break
+                    if al == 0:
+                        break
+    return False
+
+
+def _onarilmis(out):
+    tamam = tamsayi_onar(out)
+    print('  tamsayı kapasite onarımı: ' + ('sağlandı' if tamam else 'UYARI: kalan aşım var'))
     return out
 
 
@@ -149,8 +219,8 @@ def uret():
                      'düzeltme uygulandı. Modellenmiş dağılımdır.'),
         'eleme': {'kontenjan': ELEME_KONT, 'sira': ELEME_SIRA},
         'bolumler': {
-            'in': varyant(rows),
-            'out': varyant([r for r in rows if not kktc(r)]),
+            'in': _onarilmis(varyant(rows)),
+            'out': _onarilmis(varyant([r for r in rows if not kktc(r)])),
         },
     }
     os.makedirs('data', exist_ok=True)

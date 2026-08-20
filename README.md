@@ -12,13 +12,16 @@
 > Ayrıntı: [KALIBRASYON.md](KALIBRASYON.md).
 
 > **In English** — Turkey's 2026 university placement data (YKS), rebuilt from ÖSYM's own official
-> spreadsheets into one searchable dataset of **21,493 programmes**, with an **estimated success rank
-> (başarı sırası)** that ÖSYM does not publish. Ranks are derived from ÖSYM's official cumulative
-> score-distribution table via probit interpolation, and validated at seven independent points against
-> ÖSYM's own rank thresholds (0.1–1.5% deviation). Unlike every comparable project, this one does not
-> scrape YÖK Atlas — it parses ÖSYM's primary files, so it was unaffected when YÖK Atlas moved to a
-> SPA in April 2026. Live site: **https://osym-yks.vercel.app** · dataset: [`data/`](data/) (JSON +
-> CSV, [field reference](data/README.md)) · MCP server: [`mcp_server.py`](mcp_server.py).
+> spreadsheets into one searchable dataset of **21,493 programmes**. ÖSYM publishes scores but **not**
+> success ranks (*başarı sırası*) in these tables, so ranks come from two sources: for **18,251
+> programmes** the official rank published by YÖK Atlas, fetched once by `resmi_sira.py`; for the rest
+> an estimate interpolated from ÖSYM's own cumulative score-distribution table, marked `≈` in the UI.
+> The estimator was measured against the official ranks on all 18,251 overlapping programmes:
+> **median deviation 0.25%** ([KALIBRASYON.md](KALIBRASYON.md)). The placement pipeline itself reads
+> only ÖSYM's primary files — it was unaffected when YÖK Atlas moved to a SPA in April 2026 — and
+> degrades gracefully to estimated ranks if the YÖK Atlas file is absent.
+> Live site: **https://osym-yks.vercel.app** · dataset: [`data/`](data/) (JSON + CSV,
+> [field reference](data/README.md)) · MCP server: [`mcp_server.py`](mcp_server.py).
 > Not affiliated with ÖSYM.
 
 ÖSYM'nin 18 Ağustos 2026'da yayımladığı **resmî** yerleştirme dosyalarını (TABLO-3 + TABLO-4)
@@ -37,7 +40,7 @@ tablosundan tahmin eder.
 
 ```bash
 python3 server.py            # yerel arayüz -> http://localhost:8787
-python3 test_model.py        # 10 değişmez testi
+python3 test_model.py        # 12 değişmez testi
 ```
 
 Harici bağımlılık yok, `pip install` yok — sadece Python 3'ün standart kütüphanesi.
@@ -85,25 +88,27 @@ hem KKTC'deki üniversiteleri hem de Türkiye'deki üniversitelerin "KKTC Uyrukl
 | **Doluluk oranı** | **%99,73** | **%99,80** |
 | Kota (ÖSYM başarı sırası barajı) | 50.000 | 50.000 |
 | Kota kullanımı | %38,0 | %37,4 |
-| **En son yerleşen aday** | **464,865 ≈ 49.241. sıra** | **465,445 ≈ 48.737. sıra** |
-| En yüksek taban | 559,697 ≈ 26. sıra | aynı |
+| **En son yerleşen aday** | **464,865 → 49.623. sıra** | **465,445 → 49.111. sıra** |
+| En yüksek taban | 559,697 → 1. sıra | aynı |
 | En yüksek puan (tavan) | 566,535 | aynı |
 | Devlet / Vakıf kontenjanı | 15.219 / 3.530 | 15.201 / 3.530 |
+
+> Sıralar YÖK Atlas'ın **resmî** başarı sırasıdır (Tıp'ta programların %100'ü).
 
 **Açık kalan 54 kadronun dağılımı:** 38'i şehit-gazi yakını, 13'ü KKTC uyruklu, 3'ü okul birincisi
 kontenjanından. Genel kontenjanda pratikte boşluk yok.
 
-**Sıralama bandına göre Tıp kontenjanı** (KKTC dahil):
+**Başarı sırası bandına göre Tıp kontenjanı** (KKTC dahil, resmî sıra):
 
-| Sıralama | Kontenjan |
+| Başarı sırası bandı | Kontenjan |
 |---|---|
-| 1 – 1.000 | 369 |
-| 1.000 – 5.000 | 2.314 |
-| 5.000 – 10.000 | 3.136 |
-| 10.000 – 20.000 | 8.730 |
-| 20.000 – 30.000 | 2.270 |
-| 30.000 – 40.000 | 1.815 |
-| 40.000 – 50.000 | 398 |
+| 1 – 1.000 | 328 |
+| 1.000 – 5.000 | 2.129 |
+| 5.000 – 10.000 | 3.126 |
+| 10.000 – 20.000 | 8.154 |
+| 20.000 – 30.000 | 3.082 |
+| 30.000 – 40.000 | 1.765 |
+| 40.000 – 50.000 | 448 |
 
 **Kritik ayrım:** Devlet üniversitesindeki düz **"Tıp" (Türkçe, ücretsiz)** programları — 86 program,
 **13.545 kontenjan, %100 dolu** — taban aralığı **1.132. – 21.048. sıra**. Yani klasik anlamda devlet
@@ -156,7 +161,7 @@ log-lineer yöntem normal kuyrukta sıraları sistematik olarak fazla iyimser ta
 (ilk 1.000'de %100'ü aşan tutarsız sonuçlar üretiyordu).
 
 **Doğrulama:** ÖSYM kılavuzu Tıp için **50.000 başarı sırası barajı** koyar. Modelin hesapladığı
-en düşük Tıp taban sıralaması **≈49.241** — barajın hemen altında. Bu, modelin Tıp bandında iyi
+en düşük Tıp taban sıralaması **49.623** — barajın hemen altında. Bu, modelin Tıp bandında iyi
 kalibre olduğunu gösterir. `python3 rank_model.py` çalıştırıldığında model, tablodaki bilinen
 basamakları birebir geri üretir.
 

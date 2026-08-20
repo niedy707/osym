@@ -242,6 +242,8 @@ th .ar{color:var(--accent);margin-left:3px}
 .hrow .badge{margin-left:0!important}
 .hrow .meta{font-weight:400;color:var(--dim);font-size:11px;white-space:nowrap}
 .hrow .meta b{color:var(--fg);font-weight:650}
+.rok{color:var(--accent2);font-weight:650}
+.rkis{color:var(--warn);font-weight:650}
 .who.tik{cursor:pointer;border-bottom:1px dashed rgba(255,143,143,.45)}
 .who.tik:hover,.who.tik:focus{color:#ffb3b3;border-bottom-style:solid;outline:none}
 .gcard .gsub{color:var(--dim);font-size:11px;margin-bottom:10px;line-height:1.5}
@@ -264,7 +266,8 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 .r1:last-child{border-bottom:none}
 .r1:hover,.r1:active{background:#1c212b}
 .r1 .ad{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.r1 .num{flex:0 0 auto;font-size:12px;font-variant-numeric:tabular-nums;text-align:right;color:var(--dim)}
+.r1 .num{flex:0 0 auto;font-size:12px;font-variant-numeric:tabular-nums;text-align:right;
+  color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:clip}
 .r1 .num b{color:var(--fg);font-weight:650}
 .r1 .w1{width:52px}.r1 .w2{width:50px}.r1 .w3{width:58px}
 /* birleşik bölüm özeti satırı: # · ad · dilim · program · kontenjan · doluluk · iyi-dip sıra */
@@ -323,7 +326,8 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
 .prose h3{margin:20px 0 8px;font-size:14px}
 .prose ul{padding-left:20px}
 .prose li{margin-bottom:6px}
-.prose table{font-size:12px;margin:10px 0}
+.prose table{font-size:12px;margin:10px 0;min-width:min-content}
+.prose .tblkaydir{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:10px -4px;padding:0 4px}
 .prose td,.prose th{border-bottom:1px solid var(--line);padding:6px 9px;white-space:nowrap;position:static}
 .foot{color:var(--dim);font-size:11.5px;line-height:1.7;margin-top:10px}
 @media (min-width:768px){
@@ -514,7 +518,7 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
     <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt2"></span><span class="badge pt" id="pt2"></span></h3>
       <div class="csub"><b>taban puan aralığına göre kontenjan</b> · <span id="cs2"></span></div><div id="hist"></div><div class="src" id="sr2"></div></div>
     <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt3"></span><span class="badge pt" id="pt3"></span></h3>
-      <div class="csub"><b>tahmini sıralama bandına göre kontenjan</b> · <span id="cs3"></span></div><div id="band"></div><div class="src" id="sr3"></div></div>
+      <div class="csub"><b>başarı sırası bandına göre kontenjan</b> · <span id="cs3"></span></div><div id="band"></div><div class="src" id="sr3"></div></div>
     <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt4"></span><span class="badge pt" id="pt4"></span></h3>
       <div class="csub"><b>üniversite türüne göre kontenjan</b> · <span id="cs4"></span></div><div id="tur"></div><div class="src" id="sr4"></div></div>
     <div class="card" style="margin-bottom:0"><h3><span class="who" id="kt5"></span><span class="badge pt" id="pt5"></span></h3>
@@ -612,14 +616,14 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
     <h3>Modelin doğruluğu — 7 bağımsız kontrol</h3>
     <p>ÖSYM bazı bölümlere <b>başarı sırası barajı</b> koyar. Bir bölümün en dipteki programının taban
     sıralaması bu barajın hemen altında çıkmalıdır. Model bunu hiçbir ayar yapılmadan tutturuyor:</p>
-    <table><tr><th>Bölüm</th><th>Resmî baraj</th><th>Modelin bulduğu en dip sıra</th><th>Sapma</th></tr>
+    <div class="tblkaydir"><table><tr><th>Bölüm</th><th>Resmî baraj</th><th>Modelin bulduğu en dip sıra</th><th>Sapma</th></tr>
       <tr><td>Tıp</td><td>50.000</td><td>49.241</td><td>%1,5</td></tr>
       <tr><td>Diş Hekimliği</td><td>80.000</td><td>79.783</td><td>%0,3</td></tr>
       <tr><td>Eczacılık</td><td>100.000</td><td>99.643</td><td>%0,4</td></tr>
       <tr><td>Hukuk</td><td>100.000</td><td>99.923</td><td>%0,1</td></tr>
       <tr><td>Mimarlık</td><td>250.000</td><td>250.397</td><td>%0,2</td></tr>
       <tr><td>Mühendislik</td><td>300.000</td><td>300.841</td><td>%0,3</td></tr>
-      <tr><td>Öğretmenlik</td><td>300.000</td><td>300.488</td><td>%0,2</td></tr></table>
+      <tr><td>Öğretmenlik</td><td>300.000</td><td>300.488</td><td>%0,2</td></tr></table></div>
     <h3>Bilinmesi gerekenler</h3>
     <ul>
       <li><b>Farklı puan türleri ham sırayla karşılaştırılamaz.</b> SAY'da 1.135.718, DİL'de yalnızca
@@ -632,7 +636,8 @@ select.mini{width:auto;flex:0 0 auto;font-size:12px;padding:7px 24px 7px 9px;bac
       kadın ve şehit/gazi yakını kontenjanları ayrı tutulur.</li>
       <li><b>Açık kadro</b>, kontenjan türü bazında pozitif boşlukların toplamıdır. Eşit puan nedeniyle
       kontenjan üstünde yerleştirme yapılan programlar bunu maskelemez, ayrıca gösterilir.</li>
-      <li>Kesin resmî sıralar için YÖK Atlas 2026 verisi beklenmelidir.</li>
+      <li>Resmî sırası bulunmayan programlarda (yerleşme olmamış ya da YÖK Atlas'ta yayımlanmamış)
+      modelin tahmini gösterilir ve <b class="tah">≈</b> ile işaretlenir.</li>
     </ul>
     <p style="margin-top:18px"><a href="https://github.com/niedy707/osym">Kaynak kodu, ham veri ve
     ÖSYM'nin değiştirilmemiş orijinal dosyaları →</a></p>
@@ -957,8 +962,10 @@ function ozetRows(){
     .slice().sort(OSORT[sk].f).slice(0,lim);
 }
 let OB=[];
+let RESMI_SAY=0, TAHMIN_SAY=0;
 function renderOzet(){
   const mk=+$('#okont').value;
+  if(!RESMI_SAY && OZET && OZET.sirakaynak){RESMI_SAY=OZET.sirakaynak.resmi; TAHMIN_SAY=OZET.sirakaynak.tahmini}
   const {gecen,elenen}=ozetHesap(mk);
   OB=ozetRows();
   const tk=gecen.reduce((s2,o)=>s2+o.kont,0), ty=gecen.reduce((s2,o)=>s2+o.yer,0);
@@ -994,12 +1001,15 @@ function renderOzet(){
     altındaki ${fmt(elenen.length)} bölüm listeye alınmadı; çok küçük kontenjanlı programlar tek bir
     öğrenciyle sıralamayı yanıltıcı biçimde yukarı çekiyor. Eşik olmasaydı girecek olanlardan bazıları:
     ${dip.join(' · ')||'yok'}. Eşiği yukarıdaki kutudan değiştirebilirsiniz.
-    <br><br><b style="color:var(--fg)">Sıralamalar tahmindir.</b> Kontenjan, taban ve tavan puanlar
-    ÖSYM'nin resmî TABLO-3/TABLO-4 dosyalarından birebir alınmıştır. ÖSYM bu tablolarda başarı sırası
-    yayımlamaz; sıralamalar yine ÖSYM'nin resmî <b style="color:var(--fg)">"2026-YKS Yerleştirme
-    Puanlarının Yığınsal Dağılımı"</b> tablosundan probit interpolasyonla hesaplanmıştır ve
-    Tıp/Diş/Eczacılık/Hukuk/Mimarlık/Mühendislik/Öğretmenlik barajlarıyla yedi noktada
-    doğrulanmıştır (sapma %0,1–1,5). Ayrıntı: <b style="color:var(--fg)">Yöntem</b> sekmesi.`;
+    <br><br><b style="color:var(--fg)">Sıralar ağırlıklı olarak resmîdir.</b> Kontenjan, taban ve
+    tavan puanlar ÖSYM'nin resmî TABLO-3/TABLO-4 dosyalarından birebir alınmıştır. Sıralar,
+    YÖK Atlas'ın yayımladığı <b style="color:var(--fg)">resmî başarı sırası</b>dır
+    (${fmt(RESMI_SAY)} program). Resmî sırası bulunmayan ${fmt(TAHMIN_SAY)} programda modelin
+    tahmini gösterilir ve <b class="tah">≈</b> ile işaretlenir; bu tahmin ÖSYM'nin resmî
+    "Yerleştirme Puanlarının Yığınsal Dağılımı" tablosundan probit interpolasyonla üretilir ve
+    resmî sıralarla karşılaştırıldığında medyan sapması <b style="color:var(--fg)">%0,25</b>'tir.
+    Her satırdaki <b style="color:var(--fg)">resmî oranı</b> için bölüme dokunun.
+    Ayrıntı: <b style="color:var(--fg)">Yöntem</b> sekmesi.`;
 }
 /* ---------- TÜM PROGRAMLAR ---------- */
 function apply(){
@@ -1122,11 +1132,15 @@ function bolumPanel(){
     B.baraj?`ÖSYM barajı <b>${fmt(B.baraj)}</b>`:`<b>baraj yok</b>`,
     `ilk 2.000'in <b>%${String(B.pay2000).replace('.',',')}</b>'i`,
     `ilk 50.000'in <b>%${String(B.pay50000).replace('.',',')}</b>'i`].join('');
+  const _oz=bolumOzet().find(x=>x.ad===seciliBolum), _rp=_oz?_oz.resmiPay:null;
   $('#bnote').innerHTML=`<b>${B.ad}</b> puanları <b>${B.pt}</b> türündedir. Sıralamalar yalnızca
     <b>kendi puan türü içinde</b> anlamlıdır; farklı puan türündeki bölümlerle ham sırayla
     karşılaştırılamaz (SAY'da 1.135.718 aday varken DİL'de 132.826 aday var). Kontenjan ve puanlar
-    ÖSYM resmî verisidir. Sıralar YÖK Atlas'ın <b>resmî başarı sırası</b>dır;
-    <b class="tah">≈</b> ile işaretlenenler tahmindir.`;
+    ÖSYM resmî verisidir. ${_rp==null?'':
+      (_rp>=99.95
+        ? 'Bu bölümdeki sıraların <b>tamamı</b> YÖK Atlas\'ın resmî başarı sırasıdır.'
+        : `Bu bölümdeki sıraların <b>%${_rp.toFixed(0)}</b>'i YÖK Atlas'ın resmî başarı sırasıdır; `+
+          `kalanı <b class="tah">≈</b> ile işaretli tahmindir.`)}`;
   if(!T.length){$('#bstats').innerHTML='<div class="card">Bu seçimde program yok.</div>';return}
   const tk=T.reduce((s,d)=>s+d.tk,0),ty=T.reduce((s,d)=>s+d.ty,0);
   const ac=T.reduce((s,d)=>s+d.acik,0),fz=T.reduce((s,d)=>s+d.fazla,0);
@@ -1213,27 +1227,31 @@ async function bolumAc(ad,sessiz){
 function grafikSecim(){
   const hepsi=bolumOzet(), mod=($('#gmod')||{}).value||'20';
   if(mod==='elit'){
-    // Kontenjan alt sınırı YOK: tek kişilik bir programın bile yerleşeninin
-    // yüzdelik dilimi hesaba katılır. En çok kontenjanlı 20 hariç tutulur.
-    const buyuk=new Set(hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,20).map(o=>o.ad));
-    return {liste:hepsi.filter(o=>!buyuk.has(o.ad)).slice().sort((a,b)=>a.dilim-b.dilim).slice(0,20),
+    // "Kontenjanı az" olması için gerçek bir ÜST SINIR gerekiyor; yalnızca ilk 20'yi
+    // dışlamak yetmiyordu — 3.146 kontenjanlı Okul Öncesi Öğretmenliği listeye giriyor
+    // ve başlığın vaat ettiğinin tersini gösteriyordu. Eşik: medyan bölüm kontenjanı.
+    const kontlar=hepsi.map(o=>o.kont).sort((a,b)=>a-b);
+    const esik=kontlar[Math.floor(kontlar.length/2)]||500;
+    return {liste:hepsi.filter(o=>o.kont<=esik).slice().sort((a,b)=>a.dilim-b.dilim).slice(0,20),
             baslik:'Kontenjanı az ama rekabetçi ilk 20 bölüm',
-            alt:'En çok kontenjanlı 20 bölüm hariç tutuldu. Kontenjan alt sınırı yok — tek kişilik '+
-                'bir programın yerleşeni bile hesaba katılır. Sıralama, kendi puan türü içindeki '+
-                'ortalama yüzdelik dilime göre (küçük = daha rekabetçi).'};
+            alt:`Kontenjanı medyanın (${fmt(esik)}) altında kalan bölümler arasından, kendi puan `+
+                'türü içindeki ortalama yüzdelik dilime göre en rekabetçi 20 tanesi '+
+                '(küçük dilim = daha rekabetçi). Tek kişilik bir programın yerleşeni bile sayılır.'};
   }
   const n=+mod||20;
   const liste=hepsi.slice().sort((a,b)=>b.kont-a.kont).slice(0,n);
   return {liste,
           baslik: n>=hepsi.length ? `Tüm bölümler (${fmt(hepsi.length)})` : `En çok kontenjanlı ${fmt(n)} bölüm`,
           alt:'Kontenjan sayısına göre sıralı. Her grafik, o bölümün kontenjanının hangi başarı '+
-              'sırası bandından dolduğunu gösterir. Sıralar YÖK Atlas\'ın resmî başarı sırasıdır.'};
+              'sırası bandından dolduğunu gösterir. Sıralar ağırlıklı olarak YÖK Atlas\'ın resmî '+
+              'başarı sırasıdır; her kartta o bölümün resmî oranı yazılıdır.'};
 }
 function gKart(o){
   return `<div class="gcard">
     <h3 class="hrow"><span class="who tik" data-bolum="${o.ad.replace(/"/g,'&quot;')}"
       role="button" tabindex="0" title="${o.ad} detayını aç">${o.ad.toLocaleUpperCase('tr-TR')}</span><span class="badge pt">${o.pt}</span>
-      <span class="meta">${fmt(o.prog)} program · <b>${dolKisa(o.dol)}</b> / <b>${fmt(o.kont)}</b></span></h3>
+      <span class="meta">${fmt(o.prog)} program · <b>${dolKisa(o.dol)}</b> / <b>${fmt(o.kont)}</b>
+        ${o.resmiPay!=null?`· <span class="${o.resmiPay>=99.95?'rok':'rkis'}" title="sıraların yüzde kaçı YÖK Atlas resmî verisi">${o.resmiPay>=99.95?'resmî':'%'+o.resmiPay.toFixed(0)+' resmî'}</span>`:''}</span></h3>
     <div class="gbar"></div>
     <div class="src">2026-YKS · ÖSYM resmî TABLO-4 · ${kktcMode==='in'?'KKTC dahil':'KKTC hariç'} · osym-yks.vercel.app</div>
   </div>`;
@@ -1263,6 +1281,15 @@ function dagVeri(){
 const cRenk=i=>`hsl(${(i*137.508)%360} ${62+(i%3)*12}% ${58+(i%2)*10}%)`;
 const cSeri=()=>((DAG&&DAG.bolumler[kktcMode])||[]);
 
+// Dipnottaki örnek sayılar veriden hesaplanır; KKTC anahtarıyla birlikte değişir.
+function dikeyOrnek(){
+  const S=cSeri(); if(!S.length) return '';
+  const topla=(pt,k)=>S.filter(b=>b.pt===pt).reduce((t,b)=>{
+    const j=k-b.bas; return t+((j>=0&&j<b.v.length)?b.v[j]:0)},0);
+  const pt=(S.find(b=>b.pt==='SAY')||S[0]).pt;
+  return `${pt}'da 0–1.000 aralığında ${fmt(Math.round(topla(pt,0)))}, `+
+         `99.000–100.000 aralığında ${fmt(Math.round(topla(pt,99)))}`;
+}
 async function renderCizgi(){
   $('#cnote').innerHTML=`<b>Bölümlerin sıra dağılımı.</b> Her programın yerleşeni, kendi
     tavan–taban sıra aralığına düzgün dağıtılıp 1.000'lik kovalarda toplandı —
@@ -1290,11 +1317,17 @@ async function renderCizgi(){
     <br><br><b style="color:var(--fg)">Dikey toplam neden 1.000 değil?</b> 1.000 sıralık bir
     aralıkta 1.000 aday var, ama hepsi bir lisans programına yerleşmiyor; bir kısmı ön lisansa,
     açıköğretime gidiyor ya da hiç yerleşmiyor. İlk sıralarda toplam 1.000'e dayanıyor
-    (SAY'da 0–1.000 aralığında tam <b style="color:var(--fg)">1.000</b>), sıra kötüleştikçe
-    düşüyor (SAY'da 99.000–100.000 aralığında 573, 499.000–500.000 aralığında 33).
-    Farklı puan türleri toplandığında 1.000 aşılabilir; çünkü <b style="color:var(--fg)">aynı
-    aday hem SAY hem EA hem SÖZ sıralamasında yer alır</b> — bunlar farklı kişiler değildir.
-    Kısıt her puan türü için ayrı uygulanır ve sağlanır.`;
+    (${dikeyOrnek()}), sıra kötüleştikçe düşüyor. Farklı puan türleri toplandığında 1.000
+    aşılabilir; çünkü <b style="color:var(--fg)">aynı aday hem SAY hem EA hem SÖZ sıralamasında
+    yer alır</b> — bunlar farklı kişiler değildir. Kısıt her puan türü için ayrı uygulanır ve
+    hiçbir kovada aşılmaz.
+    <br><br><b style="color:var(--fg)">Düz çizen eğriler.</b> Bir programın yerleşenleri tavan–taban
+    aralığına düzgün dağıtıldığı için, aralığı çok geniş olan programlar eğriyi yayvanlaştırır.
+    Bu özellikle SÖZ ve EA'da belirgin: SÖZ yerleşenlerinin <b style="color:var(--fg)">%29'u</b>
+    sıra aralığı 500 binden geniş programlarda (SAY'da bu oran %3). Böyle bir programda kova başına
+    0,1 kişi düştüğü için çizgi neredeyse düz görünür. Bu, o bölümün gerçekten her sıraya eşit
+    dağıldığı anlamına <b style="color:var(--fg)">gelmez</b> — tavan puanın tek bir öğrenciden
+    gelmesinin sonucudur.`;
 }
 // Kontenjana gore ilk N bolumu sec (veri zaten kontenjana gore sirali gelir)
 function ilkN(n){ cSecili=new Set(cSeri().slice(0,n).map(b=>b.ad)) }
@@ -1341,7 +1374,7 @@ function cizCizgi(){
   // desen normalize kalırken rakam okunabilir olur.
   const vurguSeri = (cVurgu>=0 && cSecili.has(S[cVurgu].ad)) ? S[cVurgu] : null;
   const eksenTepe = vurguSeri ? Math.max(1,...gor0(vurguSeri)) : null;
-  const eksenRenk = (cOlcek==='tepe' && vurguSeri) ? cRenk(cVurgu) : '#7d8797';
+  const eksenRenk = vurguSeri ? cRenk(cVurgu) : '#7d8797';
   g.strokeStyle='#252b36'; g.font='10px system-ui'; g.lineWidth=1;
   for(let i=0;i<=5;i++){
     const y=MT+PH*i/5; g.beginPath(); g.moveTo(ML,y); g.lineTo(W-MR,y); g.stroke();
@@ -1351,6 +1384,9 @@ function cizCizgi(){
         : '%'+Math.round(100*(1-i/5));
     else if(cOlcek==='log') et=fmt(Math.round(Math.pow(10,Math.log10(yMax+1)*(1-i/5))-1));
     else et=fmt(Math.round(yMax*(1-i/5)));
+    // Ortak eksenli modlarda (doğrusal/log) eksen ÖLÇEĞİ değişmez — eğriler aynı
+    // eksene çizildiği için yeniden etiketlemek yanlış olurdu — ama vurgulanan
+    // eğrinin rengini alır ve tepesi eksende işaretlenir; hangi eğriye baktığın belli olur.
     g.textAlign='right'; g.fillStyle=eksenRenk; g.fillText(et,ML-6,y+3);
   }
   const adim=xMax>1000?200:xMax>400?100:xMax>150?50:10;
@@ -1361,11 +1397,18 @@ function cizCizgi(){
   }
   g.fillStyle='#9aa3b2'; g.textAlign='center';
   g.fillText('sıralama (×1.000)',ML+PW/2,H-4);
+  if(vurguSeri && cOlcek!=='tepe' && eksenTepe){
+    const yv=Y(eksenTepe);
+    g.strokeStyle=cRenk(cVurgu); g.lineWidth=1; g.setLineDash([3,3]);
+    g.beginPath(); g.moveTo(ML,yv); g.lineTo(W-MR,yv); g.stroke(); g.setLineDash([]);
+    g.fillStyle=cRenk(cVurgu); g.font='700 10px system-ui'; g.textAlign='right';
+    g.fillText(fmt(eksenTepe),ML-6,yv+3);
+  }
   g.save(); g.translate(11,MT+PH/2); g.rotate(-Math.PI/2);
-  g.fillStyle = (cOlcek==='tepe'&&vurguSeri) ? cRenk(cVurgu) : '#9aa3b2';
-  g.fillText(cOlcek==='tepe'
-    ? (vurguSeri ? vurguSeri.ad+' — kişi sayısı' : 'kendi tepesine oran')
-    : 'kişi sayısı',0,0);
+  g.fillStyle = vurguSeri ? cRenk(cVurgu) : '#9aa3b2';
+  g.fillText(vurguSeri
+    ? vurguSeri.ad+(cOlcek==='tepe'?' — kişi sayısı':'')
+    : (cOlcek==='tepe'?'kendi tepesine oran':'kişi sayısı'),0,0);
   g.restore();
   // eğriler
   const gorunur=b=>b.v.slice(Math.max(0,-b.bas), Math.max(0,xMax-b.bas));
@@ -1490,7 +1533,14 @@ function aggKart(rows,tip){
 function renderUni(){const R=uniRows();
   $('#ulist').innerHTML=mobil()?aggKart(R,'uni'):tablo(R,[{k:'ad',t:'Üniversite',cls:'uni'},
     {k:'sehir',t:'Şehir'},{k:'tur',t:'Tür'},{k:'prog',t:'Program',n:1},...AGG],false)}
-const kisaSayi=n=>n==null?'—':(n>=1000?(n/1000).toFixed(n>=10000?0:1).replace('.',',')+'B':String(n));
+// Sıra/kontenjan kısaltması. 1 milyondan büyükler "1,1M" olur — aksi halde
+// "1095B" gibi 5 haneli metin dar ekranda satırı ikiye kırıyordu.
+const kisaSayi=n=>{
+  if(n==null) return '—';
+  if(n>=1e6) return (n/1e6).toFixed(1).replace('.',',')+'M';
+  if(n>=1000) return (n/1000).toFixed(n>=10000?0:1).replace('.',',')+'B';
+  return String(n);
+};
 function acSheet(o){
   if(!o)return;
   const B=BOLUMLER.find(b=>b.base===o.ad);
@@ -1509,8 +1559,9 @@ function acSheet(o){
       <button id="sh-close">Kapat</button>
     </div>
     <div class="fnote">Puanlar <b>yerleştirme puanı</b>dır (OBP dahil) ve ÖSYM'nin resmî verisidir.
-      <b>Sıralamalar tahmindir</b> — ÖSYM'nin "Yerleştirme Puanlarının Yığınsal Dağılımı" tablosundan
-      probit interpolasyonla hesaplanır; ayrıntı için Yöntem sekmesi.</div>`;
+      Bu bölümdeki sıraların <b>%${(o.resmiPay??0).toFixed(0)}</b>'i YÖK Atlas'ın resmî başarı
+      sırasıdır; kalanı ÖSYM'nin puan dağılımı tablosundan tahmin edilmiştir (medyan sapma %0,25).
+      Ayrıntı için Yöntem sekmesi.</div>`;
   $('#ovl').classList.remove('hidden');
   const c=$('#sh-close'); if(c)c.onclick=kapatSheet;
   const pn=$('#sh-panel'); if(pn)pn.onclick=()=>{kapatSheet();bolumAc(o.ad)};

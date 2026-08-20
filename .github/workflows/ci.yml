@@ -35,6 +35,7 @@ jobs:
           python3 build_data.py
           python3 bolumler.py
           python3 ozet.py
+          python3 dagilim.py
 
       - name: Depodaki veri, yeniden üretimle birebir aynı mı?
         # Kaynak dosyalar aynıysa çıktı da aynı olmalı. Fark varsa ya veri elle
