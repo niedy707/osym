@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0f1115">
-<meta name="description" content="2026-YKS yerleştirme verisi: 21.493 programın kontenjanı, taban/tavan puanı ve tahmini başarı sıralaması. ÖSYM resmî TABLO-3 ve TABLO-4'ten üretildi.">
+<meta name="description" content="2026-YKS yerleştirme verisi: 21.493 programın kontenjanı, taban/tavan puanı ve başarı sıralaması. ÖSYM resmî TABLO-3 ve TABLO-4'ten üretildi.">
 <title>2026-YKS Yerleştirme Verisi</title>
 <style>
 :root{--bg:#0f1115;--panel:#171a21;--panel2:#1e222b;--line:#2a2f3a;--fg:#e8eaed;--dim:#9aa3b2;
@@ -720,7 +720,7 @@ function adresYaz(ad,degistir){
   history[degistir?'replaceState':'pushState']({bolum:ad||null},'',yol+location.search);
 }
 function basligiGuncelle(ad){
-  document.title = ad ? `${ad} — 2026-YKS taban puan, kontenjan ve tahmini sıralama`
+  document.title = ad ? `${ad} — 2026-YKS taban puan, kontenjan ve başarı sırası`
                       : '2026-YKS Yerleştirme Verisi';
 }
 
@@ -815,7 +815,10 @@ function bind(){
   $$('#kktcseg .segbtn').forEach(b=>b.onclick=()=>{
     kktcMode=b.dataset.kktc;applyKKTC();
     $$('#kktcseg .segbtn').forEach(x=>x.classList.toggle('on',x.dataset.kktc===kktcMode));
-    page=0;renderOzet();renderGrafik();
+    page=0;renderOzet();
+    // Çizgi grafiği ayrı veri kümesinden çiziliyor; KKTC anahtarı onu da yenilemeli,
+    // yoksa görünen eğriler eski varyantta kalıyordu.
+    if(gOlcu==='cizgi'){cSecili.clear(); renderCizgi()} else renderGrafik();
     if(ALL){apply();bolumPanel()}
     aktifSekmeYenile()});
   $$('.tab').forEach(t=>t.onclick=()=>{
@@ -1085,7 +1088,7 @@ function bolumRows(){
   return bolumAll().filter(d=>(!tu||d.unituru===tu)&&(!bu||d.burs===bu)&&
     (!q||norm(d.uni+' '+d.sehir+' '+d.prog).includes(q))).sort((a,b)=>(b.min??0)-(a.min??0));
 }
-// bir bölümün programlarını tahmini sıralama bantlarına dağıtır
+// bir bölümün programlarını başarı sırası bantlarına dağıtır
 function bandVeri(T,baraj){
   const sirs=T.filter(d=>d.sira!=null).map(d=>d.sira);
   if(!sirs.length) return [];
@@ -1551,7 +1554,7 @@ function acSheet(o){
     ['Ortalama dilim',fmtY(o.dilim)]];
   $('#sheet').innerHTML=`<h4>${o.ad}</h4>
     <div class="sm">${fmt(o.prog)} program · toplam kontenjan ${fmt(o.kont)} · doluluk ${dolKisa(o.dol)}
-      · tahmini sıra ${fmt(o.enIyiSira)} – ${fmt(o.enDipSira)}${B&&B.baraj?` · ÖSYM barajı ${fmt(B.baraj)}`:''}</div>
+      · sıra ${fmt(o.enIyiSira)} – ${fmt(o.enDipSira)}${B&&B.baraj?` · ÖSYM barajı ${fmt(B.baraj)}`:''}</div>
     <div class="kv">${kv.map(([k,v])=>`<div><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}</div>
     <div class="act">
       ${B?`<button class="pri" id="sh-panel">Bölüm panelini aç</button>`:''}
@@ -1559,8 +1562,10 @@ function acSheet(o){
       <button id="sh-close">Kapat</button>
     </div>
     <div class="fnote">Puanlar <b>yerleştirme puanı</b>dır (OBP dahil) ve ÖSYM'nin resmî verisidir.
-      Bu bölümdeki sıraların <b>%${(o.resmiPay??0).toFixed(0)}</b>'i YÖK Atlas'ın resmî başarı
-      sırasıdır; kalanı ÖSYM'nin puan dağılımı tablosundan tahmin edilmiştir (medyan sapma %0,25).
+      ${(o.resmiPay??0)>=99.95
+        ? 'Bu bölümdeki sıraların <b>tamamı</b> YÖK Atlas\'ın resmî başarı sırasıdır.'
+        : `Bu bölümdeki sıraların <b>%${(o.resmiPay??0).toFixed(0)}</b>'i YÖK Atlas'ın resmî başarı `+
+          'sırasıdır; kalanı ÖSYM\'nin puan dağılımı tablosundan tahmin edilmiştir (medyan sapma %0,25).'}
       Ayrıntı için Yöntem sekmesi.</div>`;
   $('#ovl').classList.remove('hidden');
   const c=$('#sh-close'); if(c)c.onclick=kapatSheet;
@@ -1595,14 +1600,14 @@ function csvKaydet(head,rows,ad){
 function indirProgram(rows,ad){
   csvKaydet(['Program Kodu','Üniversite','Üni. Türü','Şehir','Fakülte/YO','Program','Düzey','Puan Türü',
     'Burs','Dil','Genel Kontenjan','Yerleşen','Açık Kadro','Kont. Üstü Yerleşen','Taban Puan','Tavan Puan',
-    'Taban Sıra','Sıra Kaynağı','Resmî Sıra','Tahmini Sıra','Yüzdelik Dilim','Tavan Sıra (tahmini)',
+    'Taban Sıra','Sıra Kaynağı','Resmî Sıra','Model Tahmini Sıra','Yüzdelik Dilim','Tavan Sıra (tahmini)',
     'Toplam Kontenjan','Toplam Yerleşen'],
     rows.map(d=>[d.kod,d.uni,d.unituru,d.sehir,d.fak,d.prog,d.duzey,d.pt,d.burs,d.dil,d.kont,d.yer,
       d.acik,d.fazla,d.min,d.max,d.sira,d.sirakaynak,d.rsira,d.smin,d.yuzde,d.smax,d.tk,d.ty]),ad);
 }
 function indirOzet(){
   csvKaydet(['Sıra','Bölüm','Puan Türü','Ort. Yüzdelik Dilim','Program','Kontenjan','Yerleşen',
-    'Açık Kadro','Doluluk %','En İyi Sıra (tahmini)','En Dip Sıra (tahmini)','En Yüksek Taban','En Düşük Taban'],
+    'Açık Kadro','Doluluk %','En İyi Sıra','En Dip Sıra','En Yüksek Taban','En Düşük Taban'],
     ozetRows().map((o,i)=>[i+1,o.ad,o.pt,o.dilim?.toFixed(3),o.prog,o.kont,o.yer,
       o.acik,o.dol?.toFixed(2),o.enIyiSira,o.enDipSira,o.enIyiPuan,o.enDusukPuan]),'2026-yks-bolum-ozet.csv');
 }

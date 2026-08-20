@@ -1,4 +1,4 @@
-# 2026-YKS Yerleştirme Verisi — kontenjan, taban/tavan puan ve tahmini sıralama
+# 2026-YKS Yerleştirme Verisi — kontenjan, taban/tavan puan ve başarı sırası
 
 [![lisans MIT](https://img.shields.io/badge/lisans-MIT-blue)](LICENSE)
 [![veri ÖSYM 18.08.2026](https://img.shields.io/badge/veri-%C3%96SYM%2018.08.2026-c45a00)](kaynak/)
@@ -68,7 +68,7 @@ Araçlar: `bolum_ara` · `bolum_detay` · `program_ara` · `sira_puan`.
 | **Tüm Programlar** | 21.493 programda arama; düzey / puan türü / üniversite türü / şehir / burs / dil filtreleri; puan, sıralama ve kontenjan aralığı filtreleri; her sütuna göre sıralama; CSV dışa aktarma |
 | **🩺 Tıp Paneli** | Kontenjan–kota doluluğu, açık kalan kadrolar (çoktan aza), puan ve sıralama bandı dağılımları, 242 Tıp programının tam listesi |
 | **Üniversite Özeti** | 228 üniversite bazında kontenjan, doluluk, en yüksek taban, en iyi sıra |
-| **Bölüm Özeti** | 517 bölüm bazında aynı metrikler |
+| **Bölüm Özeti** | 373 bölüm bazında aynı metrikler (KKTC hariç 363) |
 | **Yöntem & Kaynak** | Sıralama tahmininin nasıl yapıldığı ve sınırları |
 
 Sağ üstteki **KKTC dahil / KKTC hariç** anahtarı tüm sekmeleri aynı anda etkiler. "Hariç" modu
@@ -111,7 +111,7 @@ kontenjanından. Genel kontenjanda pratikte boşluk yok.
 | 40.000 – 50.000 | 448 |
 
 **Kritik ayrım:** Devlet üniversitesindeki düz **"Tıp" (Türkçe, ücretsiz)** programları — 86 program,
-**13.545 kontenjan, %100 dolu** — taban aralığı **1.132. – 21.048. sıra**. Yani klasik anlamda devlet
+**13.545 kontenjan, %100 dolu** — taban aralığı **1.586. – 21.679. sıra** (resmî başarı sırası). Yani klasik anlamda devlet
 tıbbı ilk ~21 binde bitiyor. 21.000–49.000 bandını vakıf ücretli/indirimli programlar, MSB/İçişleri
 kontenjanları ve UOLP programları dolduruyor.
 
@@ -188,7 +188,10 @@ basamakları birebir geri üretir.
 | `build_data.py` | `kaynak/*.xlsx` → `data/programlar.json` dönüşümü, şehir/burs/dil ayrıştırma, sıralama hesabı |
 | `rank_model.py` | ÖSYM yığınsal dağılımı + probit interpolasyon. Tek başına çalıştırılabilir |
 | `analiz_25k.py` | "İlk 25.000'in 20.000'i" iddiasının alt/üst sınır testi |
-| `ozet.py` | `data/ozet.json` — açılışta yeterli olan 315 KB'lik önceden hesaplanmış özet |
+| `ozet.py` | `data/ozet.json` — açılışta yeterli olan önceden hesaplanmış özet (~44 KB gzip) |
+| `dagilim.py` | `data/dagilim.json` — dağılım çizgi grafiğinin serileri (kapasite kısıtlı) |
+| `resmi_sira.py` | YÖK Atlas'tan resmî başarı sıraları -> `kaynak/yokatlas_basari_sirasi.json` |
+| `slug.py` | Bölüm adı -> paylaşılabilir URL parçası |
 | `bolumler.py` | Panel seçicisindeki bölüm listesi + ÖSYM barajları |
 | `test_model.py` | Değişmez/regresyon testleri (`python3 test_model.py`) |
 | `mcp_server.py` | Bağımlılıksız MCP sunucusu (stdio, JSON-RPC) |
@@ -202,7 +205,7 @@ basamakları birebir geri üretir.
 
 `kod` · `uni` · `unituru` (DEVLET/VAKIF/KKTC/YURTDISI VAKIF) · `fak` · `prog` · `base` (parantezsiz
 bölüm adı) · `pt` (puan türü) · `duzey` · `sehir` · `burs` · `dil` · `kont`/`yer` (genel kontenjan) ·
-`min`/`max` (taban/tavan puan) · `smin`/`smax` (tahmini taban/tavan sıra) · `acik` (kontenjan türü
+`min`/`max` (taban/tavan puan) · `sira` (gösterilen) / `rsira` (resmî) / `smin` (model tahmini) · `acik` (kontenjan türü
 bazında pozitif boşlukların toplamı) · `fazla` (eşit puan nedeniyle kontenjan üstü yerleşen) ·
 `tk`/`ty` (tüm kontenjan türleri toplamı) · `ob_*`/`y34_*`/`sehit_*` (özel kontenjanlar) ·
 `kktc`/`kktc_uni`/`uolp`/`uzaktan`/`io`/`aof` bayrakları
@@ -220,5 +223,5 @@ bazında pozitif boşlukların toplamı) · `fazla` (eşit puan nedeniyle konten
 Kod MIT lisanslıdır. `kaynak/` altındaki belgeler ÖSYM'ye aittir ve değiştirilmemiştir.
 
 Bu resmî bir ÖSYM ürünü **değildir**. Kontenjan, yerleşen ve puan değerleri resmî dosyalardan
-birebir alınmıştır; **sıralamalar tahmindir**. Tercih kararlarında ÖSYM ve YÖK Atlas'ın resmî
+birebir alınmıştır. Sıralar **18.251 programda YÖK Atlas'ın resmî başarı sırasıdır**, kalanında model tahminidir ve arayüzde `≈` ile işaretlenir. Tercih kararlarında ÖSYM ve YÖK Atlas'ın resmî
 yayınlarını esas alın.
