@@ -15,9 +15,12 @@ jobs:
   dogrula:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # 02.11.2026: v4/v5 Node 20 hedefliyordu ve runner onları zorla Node 24'te
+      # koşuyordu (deprecation uyarısı). Depo bir sonraki YKS'ye kadar uykuda
+      # kalacağı için uyarının sert hataya dönmesini beklemeden yükseltildi.
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
