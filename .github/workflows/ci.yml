@@ -5,9 +5,11 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
-  schedule:
-    # ÖSYM ek yerleştirme dönemi için haftalık kontrol (Pazartesi 06:00 UTC)
-    - cron: '0 6 * * 1'
+  # Haftalık cron ('0 6 * * 1', ek yerleştirme dönemi kontrolü) 02.11.2026'da
+  # kaldırıldı: dönem kapandı, veri bir sonraki YKS'ye kadar değişmiyor. Ayrıca
+  # GitHub cron'u olan bir iş akışını 60 gün hareketsizlikten sonra TAMAMEN
+  # devre dışı bırakıyor — push tetiği dahil. Cron'suz iş akışı hiç kapanmaz,
+  # bu yüzden geri eklemeden önce COZUMLER.md'deki 02.11.2026 girdisini oku.
 
 jobs:
   dogrula:
